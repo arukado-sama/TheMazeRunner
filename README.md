@@ -1,3 +1,5 @@
+/*
+
 =idées d'algorithmes
 
 void carte(){ //prend un fichier ? renvoie la carte sous quel forme ?
@@ -73,3 +75,5 @@ var pursuit(){ //joueur détecté, poursuite entamée
 	patchfind();
 	move();
 }
+
+*/
