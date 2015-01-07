@@ -9,11 +9,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-
-
     Maze *test = new Maze();
 
-    qDebug("%d", test->squares[0][0]);
 
     while(test->opened())
     {

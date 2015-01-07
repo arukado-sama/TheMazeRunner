@@ -10,6 +10,7 @@
  */
 
 
+#include <QApplication>
 #include "defines.h"
 
 
@@ -27,6 +28,8 @@ public:
     */
     Maze();
 
+    ~Maze();
+
     /*! Fenêtre de l'application */
         sf::RenderWindow *App;
 
@@ -39,11 +42,16 @@ public:
     /*! Matrice des cases du labyrinthe */
         int **squares;
 
+        int size1;
+        int size2;
+
     /*! Sprite du labyrinthe */
         Sprite *maze;
 
     /*! Sprites des murs du labyrinthe */
         Sprite *walls;
+
+        Sprite *wall;
 
     /*! Contrôle du clavier */
         void keyboard();

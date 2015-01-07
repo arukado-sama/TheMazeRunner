@@ -9,8 +9,6 @@
  * \date 19 Décembre 2014
  */
 
-
-#include <QApplication>
 #include "sprite.h"
 #include <stdio.h>
 #include <stdlib.h>
