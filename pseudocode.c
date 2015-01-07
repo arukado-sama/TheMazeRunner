@@ -102,3 +102,14 @@ var fieldMemorize(int coordJoueur[2], int maze[][], int mazeMemory[][]){ // le j
 		mazeMemory[coordJoueur[0]] [coordJoueur[1]-1-1]=maze[coordJoueur[0]] [coordJoueur[1]-1-1]; //en bas
 	}
 }
+
+void search(int vector){ //algo IA de base, fonction d'initilization préalable nécéssaire, initialisée avec un vecteur au départ, en paramètre ou au début de l'algorithme
+	while (DoorAndKey not found){
+		ScanAndGrabIfKey(); //Scanne la zone est la mets en mémoire, prend la clé si elle y est
+		if (dead end) backtrack();
+		else if (crossroad) chooseAndSetVector(); move(); //le choix sera doute complexe en prenant en compte de nombreux paramètres comme la mémoire
+		else moveForward(); //chemin unique, prend en compte les changements de directions
+	}
+	// après, courir vers la sortie
+	runToExit();
+}
