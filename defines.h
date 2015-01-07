@@ -9,10 +9,10 @@
  * \date 19 Décembre 2014
  */
 
-#include "sprite.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "sprite.h"
 
 
 #define WINDOW_WIDTH 1280
@@ -23,5 +23,9 @@
 #define LEFT 3
 #define RIGHT 4
 
+#define VOID 0
+#define WALL 1
+#define DOOR 2
+#define KEY 3
 
 #endif // DEFINES_H

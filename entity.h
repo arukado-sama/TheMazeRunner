@@ -1,7 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "defines.h"
+#include "maze.h"
 
 class Entity
 {
@@ -12,6 +12,9 @@ public:
     int x;
 
     int y;
+
+    /*! Chemin des sprites */
+    QString path;
 
     Sprite *entity;
 

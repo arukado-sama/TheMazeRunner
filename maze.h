@@ -9,7 +9,6 @@
  * \date 19 Décembre 2014
  */
 
-
 #include <QApplication>
 #include "defines.h"
 
@@ -36,14 +35,14 @@ public:
     /*! Indicateur d'évènement */
         sf::Event Event;
 
-    /*! Chemin des sprites */
-        QString path;
-
     /*! Matrice des cases du labyrinthe */
         int **squares;
 
         int size1;
-        int size2;
+        int size2;   
+
+    /*! Chemin des sprites */
+        QString path;
 
     /*! Sprite du labyrinthe */
         Sprite *maze;

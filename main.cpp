@@ -3,14 +3,13 @@
 #include <SFML/Graphics.hpp>
 
 #include "maze.h"
-#include "entity.h"
+#include "griever.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
     Maze *test = new Maze();
-
 
     while(test->opened())
     {
