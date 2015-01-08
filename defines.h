@@ -14,10 +14,6 @@
 #include <unistd.h>
 #include "sprite.h"
 
-
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
-
 #define UP 1
 #define DOWN 2
 #define LEFT 3

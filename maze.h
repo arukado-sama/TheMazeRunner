@@ -44,6 +44,10 @@ public:
         int size1;
         int size2;
 
+    /*! Dimensions de la fenêtre */
+        int WINDOW_HEIGHT;
+        int WINDOW_WIDTH;
+
     /*! Matrice des entités présentes */
         Entity *entities;
 
@@ -78,6 +82,12 @@ public:
 
     /*! Anime les entités du labyrinthe */
         void animation();
+
+    /*! Calcule les dimensions du labyrinthe */
+        void saveSizes();
+
+    /*! Calcule les dimensions du labyrinthe */
+        void saveSquares();
 };
 
 #endif // MAZE_H

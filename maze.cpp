@@ -6,7 +6,7 @@ Maze::Maze()
 
     initSquares();
 
-    initEntities();
+    //initEntities();
 }
 
 
@@ -20,6 +20,8 @@ Maze::~Maze()
 
 void Maze::initMaze()
 {
+    saveSizes();
+
     App = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32), "The Maze Runner");
 
     App->setFramerateLimit(60);
@@ -40,13 +42,11 @@ void Maze::initSquares()
 
     wall = new Sprite((path+"/wall.png").toStdString().c_str());
 
-    //tailles du labyrinthe (valeurs test)
-    size1=10;
-    size2=10;
+    qDebug("%d %d", size1, size2);
 
     //allocations des cases du labyrinthe
     squares = (int**)malloc(size1*sizeof(*squares));
-    for(int i=0 ; i<size2; i++) squares[i] = (int*)malloc(size2*sizeof(**squares));
+    for(int i=0 ; i<size1; i++) squares[i] = (int*)malloc(size2*sizeof(**squares));
 
     //initialisation des cases du labyrinthe
     for(int i=0; i<size1; i++)
@@ -56,18 +56,7 @@ void Maze::initSquares()
     //allocations des sprites des murs
     walls = (Sprite*)calloc(size1*size2, sizeof(Sprite));
 
-    squares[0][0] = 1;
-    squares[0][1] = 1;
-    squares[0][2] = 1;
-    squares[0][4] = 1;
-    squares[0][5] = 1;
-    squares[0][6] = 1;
-    squares[1][0] = 1;
-    squares[1][6] = 1;
-    squares[2][0] = 1;
-    squares[2][6] = 1;
-    squares[3][0] = 1;
-    squares[3][6] = 1;
+    saveSquares();
 
     for(int i=0; i<size1; i++)
     {
@@ -134,4 +123,86 @@ void Maze::animation()
     }
 
     App->display();
+}
+
+
+void Maze::saveSizes()
+{
+    char c = 0;
+    int s1 = 0;
+    int s2 = 0;
+
+    FILE *data;
+
+    //ouverture du fichier
+    if((data = fopen("maze.txt","r")) == NULL) {
+        fprintf(stderr, "Echec ouverture fichier. Fin de programme.\n");
+        exit(1);
+    }
+
+    while(c!=EOF)
+    {
+        c=fgetc(data);
+
+        if(c=='\n')
+        {
+            s1++;
+        }
+    }
+
+    rewind(data);
+    c = 0;
+
+    while(c!='\n')
+    {
+        c=fgetc(data);
+
+        if(isdigit(c)) s2++;
+        qDebug("%d", s2);
+    }
+
+    fclose(data);
+
+    size1 = s1;
+    size2 = s2;
+
+    WINDOW_HEIGHT = (size2)*40;
+    WINDOW_WIDTH = (size1)*40;
+}
+
+
+void Maze::saveSquares()
+{
+    FILE *data;
+    //ouverture du fichier
+    if((data = fopen("maze.txt","r")) == NULL) {
+        fprintf(stderr, "Echec ouverture fichier. Fin de programme.\n");
+        exit(1);
+    }
+
+    int s1=0, s2=0; //indices matrice
+    char c;
+
+    while(c!=EOF)
+    {
+        c=fgetc(data);
+
+        if(c=='\n')
+        {
+            s1++;
+            s2=0;
+        }
+
+        if(c!='\n')
+        {
+            if(isdigit(c))
+            {
+                squares[s1][s2] = atoi(&c);
+                s2++;
+            }
+        }
+
+    }
+
+    fclose(data);
 }
