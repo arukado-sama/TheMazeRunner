@@ -11,6 +11,7 @@
 
 #include <QApplication>
 #include "defines.h"
+#include "entity.h"
 
 
 /*! \class Maze
@@ -27,6 +28,7 @@ public:
     */
     Maze();
 
+    /*! Destructeur */
     ~Maze();
 
     /*! Fenêtre de l'application */
@@ -38,8 +40,15 @@ public:
     /*! Matrice des cases du labyrinthe */
         int **squares;
 
+    /*! Tailles pour la matrice labyrinthe */
         int size1;
-        int size2;   
+        int size2;
+
+    /*! Matrice des entités présentes */
+        Entity *entities;
+
+    /*! Nombre d'entités présentes */
+        int nbEntities;
 
     /*! Chemin des sprites */
         QString path;
@@ -57,6 +66,18 @@ public:
 
     /*! Vérifie si le labyrinthe est ouvert */
         bool opened();
+
+    /*! Initialise le labyrinthe */
+        void initMaze();
+
+    /*! Initialise le labyrinthe */
+        void initSquares();
+
+    /*! Initialise le labyrinthe */
+        void initEntities();
+
+    /*! Anime les entités du labyrinthe */
+        void animation();
 };
 
 #endif // MAZE_H

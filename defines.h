@@ -28,4 +28,9 @@
 #define DOOR 2
 #define KEY 3
 
+#define PLAYER 0
+#define GRIEVER 1
+#define SENTINEL 2
+#define GUARDIAN 3
+
 #endif // DEFINES_H

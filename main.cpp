@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "maze.h"
-#include "griever.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +13,8 @@ int main(int argc, char *argv[])
     while(test->opened())
     {
         test->keyboard();
+
+        //test->animation();
     }
 
 

@@ -2,8 +2,24 @@
 
 Maze::Maze()
 {
-    int k=0;
+    initMaze();
 
+    initSquares();
+
+    initEntities();
+}
+
+
+Maze::~Maze()
+{
+    for(int i=0; i<size2; i++) free(squares[i]);
+    free(squares);
+    free(walls);
+    free(entities);
+}
+
+void Maze::initMaze()
+{
     App = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32), "The Maze Runner");
 
     App->setFramerateLimit(60);
@@ -11,14 +27,20 @@ Maze::Maze()
     path = QCoreApplication::applicationDirPath ()+"/img";
 
     maze = new Sprite((path+"/maze.png").toStdString().c_str());
-    wall = new Sprite((path+"/wall.png").toStdString().c_str());
 
     maze->setPosition(WINDOW_WIDTH/2,WINDOW_HEIGHT/2);
 
     App->draw(*maze);
+}
 
 
-    //tailles du labyrinthe (à modifier)
+void Maze::initSquares()
+{
+    int k=0;
+
+    wall = new Sprite((path+"/wall.png").toStdString().c_str());
+
+    //tailles du labyrinthe (valeurs test)
     size1=10;
     size2=10;
 
@@ -68,11 +90,20 @@ Maze::Maze()
 }
 
 
-Maze::~Maze()
+void Maze::initEntities()
 {
-    for(int i=0; i<size2; i++) free(squares[i]);
-    free(squares);
-    free(walls);
+    //valeur test
+    nbEntities = 1;
+
+    //allocations des entités
+    entities = (Entity*)malloc(nbEntities*sizeof(*entities));
+
+    for(int nb=0; nb<nbEntities; nb++)
+    {
+        //entité test
+        Entity *e = new Entity(2, 2, GRIEVER);
+        entities[nb] = *e;
+    }
 }
 
 
@@ -90,4 +121,17 @@ bool Maze::opened()
     if(App->isOpen()) return true;
 
     else return false;
+}
+
+
+void Maze::animation()
+{
+    for(int i=0; i<nbEntities; i++)
+    {
+        entities[i].entity->setPosition(entities[i].x*40+20, WINDOW_HEIGHT-(entities[i].y*40+20));
+
+        App->draw(*(entities[i].entity));
+    }
+
+    App->display();
 }
