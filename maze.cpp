@@ -6,7 +6,7 @@ Maze::Maze()
 
     initSquares();
 
-    //initEntities();
+    initEntities();
 }
 
 
@@ -66,7 +66,7 @@ void Maze::initSquares()
             {
                 walls[k] = *wall;
 
-                walls[k].setPosition(i*40+20, WINDOW_HEIGHT-(j*40+20));
+                walls[k].setPosition(j*40+20, i*40+20);
 
                 App->draw((Sprite)walls[k]);
 
@@ -84,15 +84,18 @@ void Maze::initEntities()
     //valeur test
     nbEntities = 1;
 
-    //allocations des entités
-    entities = (Entity*)malloc(nbEntities*sizeof(*entities));
+    //allocations des cases du labyrinthe
+    entities = (Entity**)malloc(nbEntities*sizeof(*entities));
+    for(int i=0 ; i<nbEntities; i++) entities[i] = (Entity*)malloc(sizeof(**entities));
 
     for(int nb=0; nb<nbEntities; nb++)
     {
         //entité test
-        Entity *e = new Entity(2, 2, GRIEVER);
-        entities[nb] = *e;
+        Entity *e = new Entity(1, 1, GRIEVER);
+        entities[nb] = e;
     }
+
+    entities[0]->move(DOWN);
 }
 
 
@@ -117,9 +120,9 @@ void Maze::animation()
 {
     for(int i=0; i<nbEntities; i++)
     {
-        entities[i].entity->setPosition(entities[i].x*40+20, WINDOW_HEIGHT-(entities[i].y*40+20));
+        entities[i]->entity->setPosition(entities[i]->x*40+20, entities[i]->y*40+20);
 
-        App->draw(*(entities[i].entity));
+        App->draw(*(entities[i]->entity));
     }
 
     App->display();
@@ -158,7 +161,6 @@ void Maze::saveSizes()
         c=fgetc(data);
 
         if(isdigit(c)) s2++;
-        qDebug("%d", s2);
     }
 
     fclose(data);
@@ -166,8 +168,8 @@ void Maze::saveSizes()
     size1 = s1;
     size2 = s2;
 
-    WINDOW_HEIGHT = (size2)*40;
-    WINDOW_WIDTH = (size1)*40;
+    WINDOW_HEIGHT = (size1)*40;
+    WINDOW_WIDTH = (size2)*40;
 }
 
 
@@ -198,6 +200,7 @@ void Maze::saveSquares()
             if(isdigit(c))
             {
                 squares[s1][s2] = atoi(&c);
+
                 s2++;
             }
         }
@@ -205,4 +208,22 @@ void Maze::saveSquares()
     }
 
     fclose(data);
+}
+
+
+void Maze::printMaze()
+{
+    int i, j;
+
+    for(i=0;i<size1;i++)
+    {
+        printf("|");
+
+        for(j=0;j<size2;j++)
+        {
+            printf(" %d", squares[i][j]);
+        }
+
+        puts(" |");
+    }
 }

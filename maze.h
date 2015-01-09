@@ -19,17 +19,8 @@
 */
 class Maze
 {
-public:
 
-    /*!
-             *  \brief Constructeur
-             *
-             *  Constructeur de la classe Maze.
-    */
-    Maze();
-
-    /*! Destructeur */
-    ~Maze();
+private:
 
     /*! Fenêtre de l'application */
         sf::RenderWindow *App;
@@ -49,7 +40,7 @@ public:
         int WINDOW_WIDTH;
 
     /*! Matrice des entités présentes */
-        Entity *entities;
+        Entity **entities;
 
     /*! Nombre d'entités présentes */
         int nbEntities;
@@ -64,6 +55,18 @@ public:
         Sprite *walls;
 
         Sprite *wall;
+
+public:
+
+    /*!
+             *  \brief Constructeur
+             *
+             *  Constructeur de la classe Maze.
+    */
+    Maze();
+
+    /*! Destructeur */
+    ~Maze();
 
     /*! Contrôle du clavier */
         void keyboard();
@@ -88,6 +91,9 @@ public:
 
     /*! Calcule les dimensions du labyrinthe */
         void saveSquares();
+
+    /*! Affiche la matrice du labyrinthe */
+        void printMaze();
 };
 
 #endif // MAZE_H

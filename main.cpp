@@ -10,11 +10,13 @@ int main(int argc, char *argv[])
 
     Maze *test = new Maze();
 
+    test->printMaze();
+
     while(test->opened())
     {
         test->keyboard();
 
-        //test->animation();
+        test->animation();
     }
 
 
