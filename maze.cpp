@@ -38,12 +38,6 @@ void Maze::initMaze()
 
 void Maze::initSquares()
 {
-    int k=0;
-
-    wall = new Sprite((path+"/wall.png").toStdString().c_str());
-
-    qDebug("%d %d", size1, size2);
-
     //allocations des cases du labyrinthe
     squares = (int**)malloc(size1*sizeof(*squares));
     for(int i=0 ; i<size1; i++) squares[i] = (int*)malloc(size2*sizeof(**squares));
@@ -58,44 +52,19 @@ void Maze::initSquares()
 
     saveSquares();
 
-    for(int i=0; i<size1; i++)
-    {
-        for(int j=0; j<size2; j++)
-        {
-            if((squares[i][j])==WALL)
-            {
-                walls[k] = *wall;
-
-                walls[k].setPosition(j*40+20, i*40+20);
-
-                App->draw((Sprite)walls[k]);
-
-                k++;
-            }
-        }
-    }
-
-    App->display();
+    drawWalls();
 }
 
 
 void Maze::initEntities()
 {
-    //valeur test
-    nbEntities = 1;
+    saveNbEntities();
 
-    //allocations des cases du labyrinthe
+    //allocations des entités
     entities = (Entity**)malloc(nbEntities*sizeof(*entities));
     for(int i=0 ; i<nbEntities; i++) entities[i] = (Entity*)malloc(sizeof(**entities));
 
-    for(int nb=0; nb<nbEntities; nb++)
-    {
-        //entité test
-        Entity *e = new Entity(1, 1, GRIEVER);
-        entities[nb] = e;
-    }
-
-    entities[0]->move(DOWN);
+    saveEntities();
 }
 
 
@@ -123,6 +92,37 @@ void Maze::animation()
         entities[i]->entity->setPosition(entities[i]->x*40+20, entities[i]->y*40+20);
 
         App->draw(*(entities[i]->entity));
+    }
+
+    App->display();
+}
+
+
+void Maze::drawWalls()
+{
+    int k = 0;
+
+    Sprite *wall = new Sprite((path+"/wall.png").toStdString().c_str());
+    Sprite *key = new Sprite((path+"/key.png").toStdString().c_str());
+    Sprite *door = new Sprite((path+"/door.png").toStdString().c_str());
+
+    for(int i=0; i<size1; i++)
+    {
+        for(int j=0; j<size2; j++)
+        {
+            switch(squares[i][j])
+            {
+                case WALL: walls[k] = *wall; break;
+                case KEY: walls[k] = *key; break;
+                case DOOR: walls[k] = *door; break;
+            }
+
+            walls[k].setPosition(j*40+20, i*40+20);
+
+            App->draw((Sprite)walls[k]);
+
+            k++;
+        }
     }
 
     App->display();
@@ -170,6 +170,8 @@ void Maze::saveSizes()
 
     WINDOW_HEIGHT = (size1)*40;
     WINDOW_WIDTH = (size2)*40;
+
+    qDebug("%d %d", size1, size2);
 }
 
 
@@ -205,6 +207,75 @@ void Maze::saveSquares()
             }
         }
 
+    }
+
+    fclose(data);
+}
+
+
+void Maze::saveNbEntities()
+{
+    char c = 0;
+    int nb = 0;
+
+    FILE *data;
+
+    //ouverture du fichier
+    if((data = fopen("entities.txt","r")) == NULL) {
+        fprintf(stderr, "Echec ouverture fichier. Fin de programme.\n");
+        exit(1);
+    }
+
+    while(c!=EOF)
+    {
+        c=fgetc(data);
+
+        if(c=='\n')
+        {
+            nb++;
+        }
+    }
+
+    fclose(data);
+
+    nbEntities = nb;
+}
+
+
+void Maze::saveEntities()
+{
+    FILE *data;
+    //ouverture du fichier
+    if((data = fopen("entities.txt","r")) == NULL) {
+        fprintf(stderr, "Echec ouverture fichier. Fin de programme.\n");
+        exit(1);
+    }
+
+    char c;
+    int n = 0;
+    int x;
+    int y;
+    char ctype[8];
+    int type = 0;
+
+    while(c=fgetc(data)!=EOF)
+    {
+        fseek(data, -1, SEEK_CUR);
+
+        fscanf(data, "%d %d %s", &x, &y, ctype);
+
+        if(!strcmp(ctype, "PLAYER")) type = PLAYER;
+        if(!strcmp(ctype, "GRIEVER")) type = GRIEVER;
+        if(!strcmp(ctype, "SENTINEL")) type = SENTINEL;
+        if(!strcmp(ctype, "GUARDIAN")) type = GUARDIAN;
+
+        Entity *e = new Entity(x, y, type);
+
+        entities[n] = e;
+
+        n++;
+
+        fseek(data, 1, SEEK_CUR);
     }
 
     fclose(data);

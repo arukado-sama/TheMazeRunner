@@ -54,7 +54,6 @@ private:
     /*! Sprites des murs du labyrinthe */
         Sprite *walls;
 
-        Sprite *wall;
 
 public:
 
@@ -89,11 +88,20 @@ public:
     /*! Calcule les dimensions du labyrinthe */
         void saveSizes();
 
-    /*! Calcule les dimensions du labyrinthe */
+    /*! Enregistre les cases du labyrinthe */
         void saveSquares();
+
+    /*! Calcule le nombre d'entités */
+        void saveNbEntities();
+
+    /*! Enregistre les entités du labyrinthe */
+        void saveEntities();
 
     /*! Affiche la matrice du labyrinthe */
         void printMaze();
+
+    /*! Dessine les murs, la clé et la porte */
+        void drawWalls();
 };
 
 #endif // MAZE_H
