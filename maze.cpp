@@ -65,6 +65,24 @@ void Maze::initEntities()
     for(int i=0 ; i<nbEntities; i++) entities[i] = (Entity*)malloc(sizeof(**entities));
 
     saveEntities();
+
+    initMemEntities();
+}
+
+
+void Maze::initMemEntities()
+{
+    for(int k=0; k<nbEntities; k++)
+    {
+        //allocations des cases de la mémoire de l'entité
+        entities[k]->mem = (int**)malloc(size1*sizeof(*entities[k]->mem));
+        for(int i=0 ; i<size1; i++) entities[k]->mem[i] = (int*)malloc(size2*sizeof(**entities[k]->mem));
+
+        //initialisation des cases de la mémoire de l'entité
+        for(int i=0; i<size1; i++)
+            for(int j=0; j<size2; j++)
+                entities[k]->mem[i][j] = 0;
+    }
 }
 
 
@@ -284,17 +302,45 @@ void Maze::saveEntities()
 
 void Maze::printMaze()
 {
-    int i, j;
-
-    for(i=0;i<size1;i++)
+    for(int i=0;i<size1;i++)
     {
         printf("|");
 
-        for(j=0;j<size2;j++)
+        for(int j=0;j<size2;j++)
         {
             printf(" %d", squares[i][j]);
         }
 
         puts(" |");
     }
+}
+
+
+int Maze::pathFinding(Entity *e, int xe, int ye, int goal)
+{
+    int x=0, y=0;
+
+    for(int i=0;i<size1;i++)
+    {
+        for(int j=0;j<size2;j++)
+        {
+            if(squares[i][j]==goal)
+            {
+                x = i;
+                y = j;
+            }
+        }
+    }
+
+    //hors labyrinthe
+    if((xe < 0) || (xe >= size1) || (ye < 0) || (ye >= size2)) return 0;
+
+    //mémoire entité
+    if(e->mem[xe][ye] == 1) return 0;
+
+    if((xe == x) && (ye == y)) return 1;
+
+    e->mem[xe][ye] = 1;
+
+    return (pathFinding(e, xe+1, ye, goal) || pathFinding(e, xe-1, ye, goal) || pathFinding(e, xe, ye+1, goal) || pathFinding(e, xe, ye-1, goal));
 }

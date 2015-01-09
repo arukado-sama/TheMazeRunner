@@ -22,6 +22,21 @@ class Maze
 
 private:
 
+
+public:
+
+    /*!
+             *  \brief Constructeur
+             *
+             *  Constructeur de la classe Maze.
+    */
+    Maze();
+
+    /*! Destructeur */
+    ~Maze();
+
+
+
     /*! Fenêtre de l'application */
         sf::RenderWindow *App;
 
@@ -55,17 +70,7 @@ private:
         Sprite *walls;
 
 
-public:
 
-    /*!
-             *  \brief Constructeur
-             *
-             *  Constructeur de la classe Maze.
-    */
-    Maze();
-
-    /*! Destructeur */
-    ~Maze();
 
     /*! Contrôle du clavier */
         void keyboard();
@@ -81,6 +86,9 @@ public:
 
     /*! Initialise le labyrinthe */
         void initEntities();
+
+    /*! Initialise les mémoires des entités */
+        void initMemEntities();
 
     /*! Anime les entités du labyrinthe */
         void animation();
@@ -102,6 +110,9 @@ public:
 
     /*! Dessine les murs, la clé et la porte */
         void drawWalls();
+
+    /*! Algorithme de Dijkstra */
+        int pathFinding(Entity *e, int xe, int ye, int wall);
 };
 
 #endif // MAZE_H

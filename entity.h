@@ -20,7 +20,11 @@ public:
     /*! Ordonnée de l'entité */
     int y;
 
+    /*! type de l'entité */
     int type;
+
+    /*! Matrice mémoire de l'entité */
+    int **mem;
 
     /*! Chemin des sprites */
     QString path;
