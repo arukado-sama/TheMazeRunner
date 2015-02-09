@@ -54,11 +54,17 @@ public:
         int WINDOW_HEIGHT;
         int WINDOW_WIDTH;
 
-    /*! Matrice des entités présentes */
+    /*! Matrice des entités présentes (monstres)*/
         Entity **entities;
 
-    /*! Nombre d'entités présentes */
+    /*! Nombre d'entités présentes (monstres)*/
         int nbEntities;
+
+    /*! Emplacement du joueur dans le tableau des entités */
+        int player;
+
+    /*! Emplacement du gardien dans le tableau des entités */
+        int guardian;
 
     /*! Chemin des sprites */
         QString path;
@@ -68,7 +74,6 @@ public:
 
     /*! Sprites des murs du labyrinthe */
         Sprite *walls;
-
 
 
 
@@ -104,6 +109,9 @@ public:
 
     /*! Enregistre les entités du labyrinthe */
         void saveEntities();
+
+    /*! Initialisation des mémoires des monstres */
+        void saveMonstersMem();
 
     /*! Affiche la matrice du labyrinthe */
         void printMaze();

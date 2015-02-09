@@ -83,6 +83,8 @@ void Maze::initMemEntities()
             for(int j=0; j<size2; j++)
                 entities[k]->mem[i][j] = 0;
     }
+
+    saveMonstersMem();
 }
 
 
@@ -91,6 +93,11 @@ void Maze::keyboard()
     while (App->pollEvent(Event))
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) App->close();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) entities[player]->move(LEFT);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) entities[player]->move(RIGHT);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) entities[player]->move(UP);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) entities[player]->move(DOWN);
     }
 }
 
@@ -105,6 +112,11 @@ bool Maze::opened()
 
 void Maze::animation()
 {
+    App->clear();
+    App->draw(*maze);
+    drawWalls();
+
+
     for(int i=0; i<nbEntities; i++)
     {
         entities[i]->entity->setPosition(entities[i]->x*40+20, entities[i]->y*40+20);
@@ -220,9 +232,9 @@ void Maze::saveSquares()
             if(isdigit(c))
             {
                 squares[s1][s2] = atoi(&c);
-
-                s2++;
             }
+
+            s2++;
         }
 
     }
@@ -282,10 +294,10 @@ void Maze::saveEntities()
 
         fscanf(data, "%d %d %s", &x, &y, ctype);
 
-        if(!strcmp(ctype, "PLAYER")) type = PLAYER;
+        if(!strcmp(ctype, "PLAYER")){ type = PLAYER; player = n; }
         if(!strcmp(ctype, "GRIEVER")) type = GRIEVER;
         if(!strcmp(ctype, "SENTINEL")) type = SENTINEL;
-        if(!strcmp(ctype, "GUARDIAN")) type = GUARDIAN;
+        if(!strcmp(ctype, "GUARDIAN")){ type = GUARDIAN; guardian = n; }
 
         Entity *e = new Entity(x, y, type);
 
@@ -297,6 +309,18 @@ void Maze::saveEntities()
     }
 
     fclose(data);
+}
+
+
+void Maze::saveMonstersMem()
+{
+    for(int i=0; i<nbEntities; i++)
+    {
+        if(entities[i]->type != PLAYER)
+        {
+            entities[i]->mem = squares;
+        }
+    }
 }
 
 

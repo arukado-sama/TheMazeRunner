@@ -10,24 +10,6 @@ int main(int argc, char *argv[])
 
     Maze *test = new Maze();
 
-
-    //test algo
-    qDebug("%d", test->pathFinding(test->entities[0], test->entities[0]->x, test->entities[0]->y, KEY));
-
-    //test matrice mémoire
-    for(int i=0;i<test->size1;i++)
-    {
-        printf("|");
-
-        for(int j=0;j<test->size2;j++)
-        {
-            printf(" %d", test->entities[0]->mem[i][j]);
-        }
-
-        puts(" |");
-    }
-
-
     while(test->opened())
     {
         test->keyboard();
@@ -35,6 +17,7 @@ int main(int argc, char *argv[])
         test->animation();
     }
 
+    test->printMaze();
 
     // L'application se termine sans erreur
     return EXIT_SUCCESS;
