@@ -368,3 +368,59 @@ int Maze::pathFinding(Entity *e, int xe, int ye, int goal)
 
     return (pathFinding(e, xe+1, ye, goal) || pathFinding(e, xe-1, ye, goal) || pathFinding(e, xe, ye+1, goal) || pathFinding(e, xe, ye-1, goal));
 }
+
+
+void Maze::playerVision()
+{
+    int x=entities[player]->x;
+    int y=entities[player]->y;
+
+    entities[player]->mem[x][y]=squares[x][y];
+
+    /*
+    //vision à droite
+    if(squares[x+1][y]==WALL)
+        entities[player]->mem[x+1][y]=WALL;
+    else
+        if(squares[x+2][y]==WALL)
+            entities[player]->mem[x+2][y]=WALL;
+
+    //vision à gauche
+    if(squares[x-1][y]==WALL)
+        entities[player]->mem[x-1][y]=WALL;
+    else
+        if(squares[x-2][y]==WALL)
+            entities[player]->mem[x-2][y]=WALL;
+
+    //vision en haut
+    if(squares[x][y-1]==WALL)
+        entities[player]->mem[x][y-1]=WALL;
+    else
+        if(squares[x][y-2]==WALL)
+            entities[player]->mem[x][y-2]=WALL;
+
+    //vision en bas
+    if(squares[x][y+1]==WALL)
+        entities[player]->mem[x][y+1]=WALL;
+    else
+        if(squares[x][y-2]==WALL)
+            entities[player]->mem[x][y+2]=WALL;
+
+    */
+}
+
+
+void Maze::printMemPlayer()
+{
+    for(int i=0;i<size1;i++)
+    {
+        printf("|");
+
+        for(int j=0;j<size2;j++)
+        {
+            printf(" %d", entities[player]->mem[i][j]);
+        }
+
+        puts(" |");
+    }
+}

@@ -86,7 +86,7 @@ public:
     /*! Initialise le labyrinthe */
         void initMaze();
 
-    /*! Initialise le labyrinthe */
+    /*! Initialise les cases du labyrinthe */
         void initSquares();
 
     /*! Initialise le labyrinthe */
@@ -121,6 +121,12 @@ public:
 
     /*! Algorithme de Dijkstra */
         int pathFinding(Entity *e, int xe, int ye, int wall);
+
+    /*! Vision du joueur */
+        void playerVision();
+
+    /*! Affiche la mémoire de l'entité */
+        void printMemPlayer();
 };
 
 #endif // MAZE_H

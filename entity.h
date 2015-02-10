@@ -34,7 +34,6 @@ public:
 
     /*! Déplacement de l'entité */
     void move(int vector);
-
 };
 
 #endif // ENTITY_H

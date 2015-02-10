@@ -14,10 +14,14 @@ int main(int argc, char *argv[])
     {
         test->keyboard();
 
+        test->playerVision();
+
         test->animation();
     }
 
     test->printMaze();
+    printf("\n");
+    test->printMemPlayer();
 
     // L'application se termine sans erreur
     return EXIT_SUCCESS;
