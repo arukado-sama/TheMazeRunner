@@ -494,6 +494,7 @@ bool Maze::search(int X, int Y)
     {
         return true;
     }
+
     if (entities[player]->visited[Y][X + 1] == 0 && entities[player]->mem[Y][X + 1] == VOID && search(X + 1, Y))
     {
         return true;
