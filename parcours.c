@@ -2,24 +2,27 @@
 Fichier autosuffisant.
 Contient toutes les donnees necessaires pour fonction seul.
 
-problème sur le changement de la variable de direction
-dans la fonction avancementsimple
+notes : //u r d l
+up right down left -> haut droite bas gauche
+l'ordre est a respecter
+
+avancementsimple fonctionne comme demande, mais l'algorithme ne convient pas
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-#define labySize 5
+#define labySize 5 //que des matrices carrees, a manipuler avec precautions
 
 void printLaby(int laby[labySize][labySize], int hero[2]);
-void move(char c, int hero[2]);// ne verifie pas si les mouvement sont possibles
+void move(char c[1], int hero[2]);// ne verifie pas si les mouvement sont possibles
 void scan(int possiblePath[4]); //on commence par identifier les chemins possibles
-int testMove(int laby[labySize][labySize], int hero[2], char c);//verifie si le mouvement est possible dans la direction choisi
+int testMove(int laby[labySize][labySize], int hero[2], char c[1]);//verifie si le mouvement est possible dans la direction choisi
 void fieldMemorize(int coordJoueur[2], int maze[labySize][labySize], int mazeMemory[labySize][labySize]); // depassement de lecture lorsque pres des bords
-void avancementsimple(int laby[labySize][labySize], int hero[2], char *c);// parcours main sur le mur
+void avancementsimple(int laby[labySize][labySize], int hero[2], char c[1]);// parcours main sur le mur
 
-char currentVector='u';
+char currentVector[1]={'u'};
 
 int main(){
 	int laby[labySize][labySize]={{1,1,1,1,1},
@@ -27,14 +30,13 @@ int main(){
 					{1,0,0,0,1},
 					{1,1,1,0,1},
 					{1,1,1,1,1}};
-	int mem[labySize][labySize]={{5,5,5,5,5},
+	/*int mem[labySize][labySize]={{5,5,5,5,5},
 					{5,5,5,5,5},
 					{5,5,5,5,5},
 					{5,5,5,5,5},
-					{5,5,5,5,5}};
-	int possiblePath[4]={0, 0, 0, 0}; //u r d l, direction cardinales, utilisees par "void move"
+					{5,5,5,5,5}};*/
+	//int possiblePath[4]={0, 0, 0, 0}; //u r d l, direction cardinales, utilisees par "void move"
 	int hero[2]={2,2};
-	char *linkTocurrentVector=&currentVector;
 	puts("Le Labyrinthe :");
 	printLaby(laby, hero);
 	//fieldMemorize(hero, laby, mem);
@@ -42,8 +44,8 @@ int main(){
 
 	while(1){
 		sleep(1); //pour situer la progression
-		avancementsimple(laby,hero,linkTocurrentVector);
-		printLaby(laby, hero);
+		avancementsimple(laby,hero,currentVector);
+		//printLaby(laby, hero);
 	}
 
 	//puts("Le memo actuel :");
@@ -85,21 +87,22 @@ void printLaby(int laby[labySize][labySize], int hero[2]){
 
 }
 
-void move(char c, int hero[2]){
-	if(c=='d'){
+void move(char c[1], int hero[2]){
+	if(c[0]=='d'){
 		hero[0]=hero[0]+1;
 	}
-	if(c=='u'){
+	if(c[0]=='u'){
 		hero[0]=hero[0]-1;
 	}
-	if(c=='r'){
+	if(c[0]=='r'){
 		hero[1]=hero[1]+1;
 	}
-	if(c=='l'){
+	if(c[0]=='l'){
 		hero[1]=hero[1]-1;
 	}
 }
 
+//inutilise pour le moment
 void fieldMemorize(int coordJoueur[2], int maze[labySize][labySize], int mazeMemory[labySize][labySize]){ // le joueur scanne les environs depuis sa posistion actuelle et les mets en mémoires
 	//s'il ya un mur, il le met en mémoire et ne scanne pas au-délà
 	if( maze [coordJoueur[0]+1] [coordJoueur[1]] == 0) mazeMemory[coordJoueur[0]+1] [coordJoueur[1]]=0; else { //coté droit
@@ -131,44 +134,51 @@ void fieldMemorize(int coordJoueur[2], int maze[labySize][labySize], int mazeMem
 	}
 }
 
-void avancementsimple(int laby[labySize][labySize], int hero[2], char *c){ //en suivant u r d l
+void avancementsimple(int laby[labySize][labySize], int hero[2], char c[1]){ //en suivant u r d l
+//d'abord tourner, avant de tenter d'avancer ?
 
-//problème sur le changement de la variable de direction
+	if (c[0]=='u'){
+		c[0]='r';
+		printf("changement de direction : %c\n",c[0]);	
+	}
+	else if (c[0]=='r'){
+		c[0]='d';
+		printf("changement de direction : %c\n",c[0]);
+	}
+	else if (c[0]=='d'){
+		c[0]='l';
+		printf("changement de direction : %c\n",c[0]);	
+	}
+	else /*(c[0]=='l')*/{
+		c[0]='u';
+		printf("changement de direction : %c\n",c[0]);
+	}
+
 	if(testMove(laby, hero, currentVector)){
 		move(currentVector, hero);
-	} else {
-// instructions de changement de direction
-		if (c=='u'){
-			*c='r';	
-		}
-		if (c=='r'){
-			*c='d';	
-		}
-		if (c=='d'){
-			*c='l';	
-		}
-		if (c=='l'){
-			*c='u';	
-		}
+		printLaby(laby, hero);
 	}
+// instructions de changement de direction
+
+	
 }
 
-int testMove(int laby[labySize][labySize], int hero[2], char c){ //en suivant u r d l
+int testMove(int laby[labySize][labySize], int hero[2], char c[1]){ //en suivant u r d l
 //retravailler code qui suit
-	if(c=='u'){
+	if(c[0]=='u'){
 		if( laby[hero[0]-1][hero[1]]==0 ){
 			return 1;		
 		} else return 0;
-	}else if(c=='r'){
+	}else if(c[0]=='r'){
 		if( laby[hero[0]][hero[1]+1]==0 ){
 			return 1;		
 		} else return 0;
-	} else if(c=='d'){
+	} else if(c[0]=='d'){
 		if( laby[hero[0]+1][hero[1]]==0 ){
 			return 1;		
 		} else return 0;
 	} else
-	/*if(c=='l')*/{
+	/*if(c[0]=='l')*/{
 		if( laby[hero[0]][hero[1]-1]==0 ){
 			return 1;		
 		} else return 0;
