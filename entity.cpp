@@ -26,9 +26,9 @@ void Entity::move(int vector)
 {
     switch(vector)
     {
-        case UP: if(mem[x][y-1]!=WALL) y = y-1; break;
-        case DOWN: if(mem[x][y+1]!=WALL) y = y+1; break;
-        case LEFT: if(mem[x-1][y]!=WALL) x = x-1; break;
-        case RIGHT: if(mem[x+1][y]!=WALL) x = x+1; break;
+        case UP: if(mem[y-1][x]!=WALL)y = y-1; break;
+        case DOWN: if(mem[y+1][x]!=WALL) y = y+1; break;
+        case LEFT: if(mem[y][x-1]!=WALL) x = x-1; break;
+        case RIGHT: if(mem[y][x+1]!=WALL) x = x+1; break;
     }
 }

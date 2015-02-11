@@ -12,11 +12,13 @@ int main(int argc, char *argv[])
 
     while(test->opened())
     {
-        test->keyboard();
-
         test->playerVision();
 
+        test->keyboard();
+
         test->animation();
+
+        test->search(test->entities[test->player]->x, test->entities[test->player]->y);
     }
 
     test->printMaze();

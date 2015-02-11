@@ -84,13 +84,40 @@ void Maze::initMemEntities()
                 entities[k]->mem[i][j] = 0;
     }
 
+    initVisitedSquares();
+
     saveMonstersMem();
+}
+
+
+void Maze::initVisitedSquares()
+{
+    for(int k=0; k<nbEntities; k++)
+    {
+        //allocations des cases visitées par l'entité
+        entities[k]->visited = (int**)malloc(size1*sizeof(*entities[k]->visited));
+        for(int i=0 ; i<size1; i++) entities[k]->visited[i] = (int*)malloc(size2*sizeof(**entities[k]->visited));
+
+        //initialisation des cases visitées par l'entité
+        for(int i=0; i<size1; i++)
+            for(int j=0; j<size2; j++)
+                entities[k]->visited[i][j] = 0;
+    }
+
+    for(int k=0; k<nbEntities; k++)
+        for(int i=0;i<size1;i++)
+        {
+            for(int j=0;j<size2;j++)
+            {
+                entities[k]->visited[i][j] = 0;
+            }
+        }
 }
 
 
 void Maze::keyboard()
 {
-    while (App->pollEvent(Event))
+    if (App->pollEvent(Event))
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) App->close();
 
@@ -372,41 +399,59 @@ int Maze::pathFinding(Entity *e, int xe, int ye, int goal)
 
 void Maze::playerVision()
 {
-    int x=entities[player]->x;
-    int y=entities[player]->y;
+    int y=entities[player]->x;
+    int x=entities[player]->y;
 
     entities[player]->mem[x][y]=squares[x][y];
 
-    /*
-    //vision à droite
+    if(entities[player]->mem[x][y] != WALL)
+    {
+
+    //vision en bas
     if(squares[x+1][y]==WALL)
         entities[player]->mem[x+1][y]=WALL;
     else
         if(squares[x+2][y]==WALL)
             entities[player]->mem[x+2][y]=WALL;
 
-    //vision à gauche
+    //vision en haut
     if(squares[x-1][y]==WALL)
         entities[player]->mem[x-1][y]=WALL;
     else
         if(squares[x-2][y]==WALL)
             entities[player]->mem[x-2][y]=WALL;
 
-    //vision en haut
+    //vision à gauche
     if(squares[x][y-1]==WALL)
         entities[player]->mem[x][y-1]=WALL;
     else
         if(squares[x][y-2]==WALL)
             entities[player]->mem[x][y-2]=WALL;
 
-    //vision en bas
+    //vision à droite
     if(squares[x][y+1]==WALL)
         entities[player]->mem[x][y+1]=WALL;
     else
-        if(squares[x][y-2]==WALL)
+        if(squares[x][y+2]==WALL)
             entities[player]->mem[x][y+2]=WALL;
 
-    */
+    //vision en haut à droite
+    if(squares[x-1][y+1]==WALL)
+        entities[player]->mem[x-1][y+1]=WALL;
+
+    //vision en haut à gauche
+    if(squares[x-1][y-1]==WALL)
+        entities[player]->mem[x-1][y-1]=WALL;
+
+    //vision en bas à droite
+    if(squares[x+1][y+1]==WALL)
+        entities[player]->mem[x+1][y+1]=WALL;
+
+    //vision en bas à gauche
+    if(squares[x+1][y-1]==WALL)
+        entities[player]->mem[x+1][y-1]=WALL;
+
+    }
 }
 
 
@@ -423,4 +468,56 @@ void Maze::printMemPlayer()
 
         puts(" |");
     }
+}
+
+
+bool Maze::search(int X, int Y)
+{
+    entities[player]->x = X;
+    entities[player]->y = Y;
+
+    entities[player]->visited[Y][X] = 1;
+
+    qDebug("x= %d  y= %d\n", entities[player]->x, entities[player]->y);
+
+    playerVision();
+    keyboard();
+    animation();
+    sleep(0.5);
+
+    if(squares[Y][X] == DOOR)
+    {
+        return true;
+    }
+
+    if (entities[player]->visited[Y][X - 1] == 0 && entities[player]->mem[Y][X - 1] == VOID && search(X - 1, Y))
+    {
+        return true;
+    }
+    if (entities[player]->visited[Y][X + 1] == 0 && entities[player]->mem[Y][X + 1] == VOID && search(X + 1, Y))
+    {
+        return true;
+    }
+
+    if (entities[player]->visited[Y - 1][X] == 0 && entities[player]->mem[Y - 1][X] == VOID && search(X, Y - 1))
+    {
+        return true;
+    }
+
+    if (entities[player]->visited[Y + 1][X] == 0 && entities[player]->mem[Y + 1][X] == VOID && search(X, Y + 1))
+    {
+        return true;
+    }
+
+    entities[player]->x = X;
+    entities[player]->y = Y;
+
+    entities[player]->visited[Y][X] = 0;
+
+    playerVision();
+    keyboard();
+    animation();
+    sleep(0.5);
+
+    return false;
 }

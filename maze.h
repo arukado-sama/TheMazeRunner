@@ -14,6 +14,7 @@
 #include "entity.h"
 
 
+
 /*! \class Maze
    * \brief Classe qui permet de créer un labyrinthe
 */
@@ -95,6 +96,9 @@ public:
     /*! Initialise les mémoires des entités */
         void initMemEntities();
 
+    /*! Initialise les cases visitées par les entitées */
+        void initVisitedSquares();
+
     /*! Anime les entités du labyrinthe */
         void animation();
 
@@ -127,6 +131,9 @@ public:
 
     /*! Affiche la mémoire de l'entité */
         void printMemPlayer();
+
+    /*! Le joueur cherche la sortie */
+        bool search(int X, int Y);
 };
 
 #endif // MAZE_H

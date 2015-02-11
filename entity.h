@@ -26,6 +26,9 @@ public:
     /*! Matrice mémoire de l'entité */
     int **mem;
 
+    /*! Matrice des cases visitées */
+    int **visited;
+
     /*! Chemin des sprites */
     QString path;
 
