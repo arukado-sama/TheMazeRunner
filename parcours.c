@@ -6,7 +6,7 @@ notes : //u r d l
 up right down left -> haut droite bas gauche
 l'ordre est a respecter
 
-avancementsimple fonctionne comme demande, mais l'algorithme ne convient pas
+avancementsimple fonctionne comme demande
 */
 
 #include <stdio.h>
@@ -22,7 +22,14 @@ int testMove(int laby[labySize][labySize], int hero[2], char c[1]);//verifie si 
 void fieldMemorize(int coordJoueur[2], int maze[labySize][labySize], int mazeMemory[labySize][labySize]); // depassement de lecture lorsque pres des bords
 void avancementsimple(int laby[labySize][labySize], int hero[2], char c[1]);// parcours main sur le mur
 
+void DirectionChange(char rota[1], char direct[1]);
+void ChangeRotation(char rota[1]);
+
 char currentVector[1]={'u'};
+char currentRotation[1]={'r'};
+char lastMove[1]={'a'};
+int rotationCounter[1]={0};
+int RotationCompensation[2]={0,0}; //limites : 2, 3
 
 int main(){
 	int laby[labySize][labySize]={{1,1,1,1,1},
@@ -43,7 +50,7 @@ int main(){
 	
 
 	while(1){
-		sleep(1); //pour situer la progression
+		
 		avancementsimple(laby,hero,currentVector);
 		//printLaby(laby, hero);
 	}
@@ -135,32 +142,70 @@ void fieldMemorize(int coordJoueur[2], int maze[labySize][labySize], int mazeMem
 }
 
 void avancementsimple(int laby[labySize][labySize], int hero[2], char c[1]){ //en suivant u r d l
-//d'abord tourner, avant de tenter d'avancer ?
+//mettre en place un changement de rotation u l d r
 
-	if (c[0]=='u'){
-		c[0]='r';
-		printf("changement de direction : %c\n",c[0]);	
-	}
-	else if (c[0]=='r'){
-		c[0]='d';
-		printf("changement de direction : %c\n",c[0]);
-	}
-	else if (c[0]=='d'){
-		c[0]='l';
-		printf("changement de direction : %c\n",c[0]);	
-	}
-	else /*(c[0]=='l')*/{
-		c[0]='u';
-		printf("changement de direction : %c\n",c[0]);
-	}
-
-	if(testMove(laby, hero, currentVector)){
+	if(testMove(laby, hero, currentVector)){ //
 		move(currentVector, hero);
+		lastMove[0]=currentVector[0]; //non utilise
 		printLaby(laby, hero);
+		DirectionChange(currentRotation, currentVector);
+		sleep(1); //pour situer la progression
+	} else {
+		ChangeRotation(currentRotation);
+		while(testMove(laby, hero, currentVector)!=1){
+			DirectionChange(currentRotation, currentVector);
+		}
+		ChangeRotation(currentRotation);
 	}
-// instructions de changement de direction
+}
 
-	
+void DirectionChange(char rota[1], char c[1]){
+	if(rota[0]=='r'){
+		if (c[0]=='u'){
+			c[0]='r';
+			//printf("changement de direction : %c\n",c[0]);	
+		}
+		else if (c[0]=='r'){
+			c[0]='d';
+			//printf("changement de direction : %c\n",c[0]);
+		}
+		else if (c[0]=='d'){
+			c[0]='l';
+			//printf("changement de direction : %c\n",c[0]);	
+		}
+		else //(c[0]=='l')
+		{
+			c[0]='u';
+			//printf("changement de direction : %c\n",c[0]);
+		}
+	} else { //rotation 'l'
+		if (c[0]=='u'){
+			c[0]='l';
+			//printf("changement de direction : %c\n",c[0]);	
+		}
+		else if (c[0]=='l'){
+			c[0]='d';
+			//printf("changement de direction : %c\n",c[0]);
+		}
+		else if (c[0]=='d'){
+			c[0]='r';
+			//printf("changement de direction : %c\n",c[0]);	
+		}
+		else //(c[0]=='r')
+		{	c[0]='u';
+			//printf("changement de direction : %c\n",c[0]);
+		}
+	}
+}
+
+void ChangeRotation(char currentRotation[1]){
+			if (currentRotation[0]=='l'){ //changement de rotation
+			currentRotation[0]='r';
+			//printf("changement de rotation : %c\n",'r');
+		} else {
+			currentRotation[0]='l';
+			//printf("changement de rotation : %c\n",'l');
+		}
 }
 
 int testMove(int laby[labySize][labySize], int hero[2], char c[1]){ //en suivant u r d l
