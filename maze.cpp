@@ -81,7 +81,7 @@ void Maze::initMemEntities()
         //initialisation des cases de la mémoire de l'entité
         for(int i=0; i<size1; i++)
             for(int j=0; j<size2; j++)
-                entities[k]->mem[i][j] = 0;
+                entities[k]->mem[i][j] = UNKNOWN;
     }
 
     initVisitedSquares();
@@ -119,7 +119,10 @@ void Maze::keyboard()
 {
     if (App->pollEvent(Event))
     {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) App->close();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            App->close();
+        }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) entities[player]->move(LEFT);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) entities[player]->move(RIGHT);
@@ -359,7 +362,7 @@ void Maze::printMaze()
 
         for(int j=0;j<size2;j++)
         {
-            printf(" %d", squares[i][j]);
+            printf(" %2.d", squares[i][j]);
         }
 
         puts(" |");
@@ -411,45 +414,77 @@ void Maze::playerVision()
     if(squares[x+1][y]==WALL)
         entities[player]->mem[x+1][y]=WALL;
     else
+    {
+        entities[player]->mem[x+1][y]=VOID;
+
         if(squares[x+2][y]==WALL)
             entities[player]->mem[x+2][y]=WALL;
+
+        else entities[player]->mem[x+2][y]=VOID;
+    }
 
     //vision en haut
     if(squares[x-1][y]==WALL)
         entities[player]->mem[x-1][y]=WALL;
     else
+    {
+        entities[player]->mem[x-1][y]=VOID;
+
         if(squares[x-2][y]==WALL)
             entities[player]->mem[x-2][y]=WALL;
+
+        else entities[player]->mem[x-2][y]=VOID;
+    }
 
     //vision à gauche
     if(squares[x][y-1]==WALL)
         entities[player]->mem[x][y-1]=WALL;
     else
+    {
+        entities[player]->mem[x][y-1]=VOID;
+
         if(squares[x][y-2]==WALL)
             entities[player]->mem[x][y-2]=WALL;
+
+        else entities[player]->mem[x][y-2]=VOID;
+    }
 
     //vision à droite
     if(squares[x][y+1]==WALL)
         entities[player]->mem[x][y+1]=WALL;
     else
+    {
+        entities[player]->mem[x][y+1]=VOID;
+
         if(squares[x][y+2]==WALL)
             entities[player]->mem[x][y+2]=WALL;
+
+        else entities[player]->mem[x][y+2]=VOID;
+    }
 
     //vision en haut à droite
     if(squares[x-1][y+1]==WALL)
         entities[player]->mem[x-1][y+1]=WALL;
+    else
+        entities[player]->mem[x-1][y+1]=VOID;
 
     //vision en haut à gauche
     if(squares[x-1][y-1]==WALL)
         entities[player]->mem[x-1][y-1]=WALL;
+    else
+        entities[player]->mem[x-1][y-1]=VOID;
 
     //vision en bas à droite
     if(squares[x+1][y+1]==WALL)
         entities[player]->mem[x+1][y+1]=WALL;
+    else
+        entities[player]->mem[x-1][y-1]=VOID;
 
     //vision en bas à gauche
     if(squares[x+1][y-1]==WALL)
         entities[player]->mem[x+1][y-1]=WALL;
+    else
+        entities[player]->mem[x-1][y-1]=VOID;
 
     }
 }
@@ -463,7 +498,7 @@ void Maze::printMemPlayer()
 
         for(int j=0;j<size2;j++)
         {
-            printf(" %d", entities[player]->mem[i][j]);
+            printf(" %2.d", entities[player]->mem[i][j]);
         }
 
         puts(" |");
@@ -473,6 +508,14 @@ void Maze::printMemPlayer()
 
 bool Maze::search(int X, int Y)
 {
+    // (canMove) Implémenter cul-de-sac avec la vision à 2 cases et faire fonction  (renvoie true)
+    // (search) rajouter aléatoire en appelant la fonction sur les 4 directions et en sélectionnant aléatoirement une des vraies
+    // dijkstra(X, Y) renvoie le plus court chemin, tableau parcours qui contient des structures (int distance, int x-pred, int y-pred)
+
+    int vector = -1;
+    int i = -1;
+    int vectors[4];
+
     entities[player]->x = X;
     entities[player]->y = Y;
 
@@ -485,11 +528,32 @@ bool Maze::search(int X, int Y)
     animation();
     sleep(0.5);
 
+    if(!opened()) return false;
+
     if(squares[Y][X] == DOOR)
     {
         return true;
     }
 
+    if(canMove(X, Y, UP)){ i++; vectors[i] = UP; }
+    if(canMove(X, Y, DOWN)){ i++; vectors[i] = DOWN; }
+    if(canMove(X, Y, LEFT)){ i++; vectors[i] = LEFT; }
+    if(canMove(X, Y, RIGHT)){ i++; vectors[i] = RIGHT; }
+
+    for(int j=0; j<=i; j++) qDebug("%d", vectors[i]);
+
+    if(i!=-1) vector = vectors[rand()%(i+1)];
+
+    switch(vector)
+    {
+        case UP: if(search(X, Y - 1)) return true; break;
+        case DOWN: if(search(X, Y + 1)) return true; break;
+        case LEFT: if(search(X - 1, Y)) return true; break;
+        case RIGHT: if(search(X + 1, Y)) return true; break;
+        case -1: return false; break;
+    }
+
+    /*
     if (entities[player]->visited[Y][X - 1] == 0 && entities[player]->mem[Y][X - 1] == VOID && search(X - 1, Y))
     {
         return true;
@@ -509,6 +573,7 @@ bool Maze::search(int X, int Y)
     {
         return true;
     }
+    */
 
     entities[player]->x = X;
     entities[player]->y = Y;
@@ -519,6 +584,41 @@ bool Maze::search(int X, int Y)
     keyboard();
     animation();
     sleep(0.5);
+
+    return false;
+}
+
+
+bool Maze::canMove(int X, int Y, int vector)
+{
+    int visited, mem;
+
+    switch(vector)
+    {
+        case UP:
+            visited = entities[player]->visited[Y - 1][X];
+            mem = entities[player]->mem[Y - 1][X];
+            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+            break;
+
+        case DOWN:
+            visited = entities[player]->visited[Y + 1][X];
+            mem = entities[player]->mem[Y + 1][X];
+            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+            break;
+
+        case LEFT:
+            visited = entities[player]->visited[Y][X - 1];
+            mem = entities[player]->mem[Y][X - 1];
+            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+            break;
+
+        case RIGHT:
+            visited = entities[player]->visited[Y][X + 1];
+            mem = entities[player]->mem[Y][X + 1];
+            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+            break;
+    }
 
     return false;
 }

@@ -19,6 +19,7 @@
 #define LEFT 3
 #define RIGHT 4
 
+#define UNKNOWN -1
 #define VOID 0
 #define WALL 1
 #define DOOR 2

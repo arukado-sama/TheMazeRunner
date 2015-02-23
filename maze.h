@@ -134,6 +134,9 @@ public:
 
     /*! Le joueur cherche la sortie */
         bool search(int X, int Y);
+
+    /*! Le joueur peut bouger dans la direction */
+        bool canMove(int X, int Y, int vector);
 };
 
 #endif // MAZE_H
