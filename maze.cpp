@@ -478,13 +478,13 @@ void Maze::playerVision()
     if(squares[x+1][y+1]==WALL)
         entities[player]->mem[x+1][y+1]=WALL;
     else
-        entities[player]->mem[x-1][y-1]=VOID;
+        entities[player]->mem[x+1][y+1]=VOID;
 
     //vision en bas à gauche
     if(squares[x+1][y-1]==WALL)
         entities[player]->mem[x+1][y-1]=WALL;
     else
-        entities[player]->mem[x-1][y-1]=VOID;
+        entities[player]->mem[x+1][y-1]=VOID;
 
     }
 }
