@@ -540,7 +540,7 @@ bool Maze::search(int X, int Y)
     if(canMove(X, Y, LEFT)){ i++; vectors[i] = LEFT; }
     if(canMove(X, Y, RIGHT)){ i++; vectors[i] = RIGHT; }
 
-    for(int j=0; j<=i; j++) qDebug("%d", vectors[i]);
+    for(int j=0; j<=i; j++) qDebug("%d", vectors[j]); //le qDebug est sur j
 
     if(i!=-1) vector = vectors[rand()%(i+1)];
 
@@ -578,7 +578,7 @@ bool Maze::search(int X, int Y)
     entities[player]->x = X;
     entities[player]->y = Y;
 
-    entities[player]->visited[Y][X] = 0;
+    //entities[player]->visited[Y][X] = 0; //pose probleme
 
     playerVision();
     keyboard();
