@@ -3,8 +3,18 @@ pour dijkstra, tester en unidimensionnel (ou pas)
 
 problème sur la récursivité : le paramètre de retour
 l'astuce : cumuler des chiffres, puis les retraduire en lettre
-mais cela ne permet que de travailler sur de petits labyrinthes
+mais cela ne permet que de travailler sur de petits labyrinthes car le nombre devient très long
+
+faire une liste chainée ? rique d'ếtre multiple, on tombre dans  la construction d'un arbre,
+mais c'est probablement la solution la plus élégante,
+mais il faudra faire une fonction de lecture d'arbre, et récupérer la solution
+comme dans le knapsack
 */
+
+//u 1
+//r 2
+//d 3
+//l 4
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,10 +24,10 @@ mais cela ne permet que de travailler sur de petits labyrinthes
 #define labySize 5 //que des matrices carrees, a manipuler avec precautions
 
 void printLaby(int laby[labySize][labySize], int hero[2], int end[2]);
-int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], char vector, int iteration);
+int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level);
 //depart est a l'origine la position du hero, change a chaque appel.
 //vector est la direction d'ou venait la case depart, donc faire un contraire pour ne pas revenir en arriere, non-initialisé au départ
-int rectest(int i, int lim, int level);
+//algorithme recursif a quatre dimension ? complication pour récupérer la réponse ?
 
 int main(){
 	char path[9]=""; //chemin
@@ -31,12 +41,13 @@ int main(){
 								{1,0,0,0,1},
 								{1,0,0,0,1},
 								{1,1,1,1,1}};
-	int hero[2]={2,2};
+	int hero[2]={1,1};
 	int end[2]={2,3};
 	puts("Test algo Dijkstra");
 	printLaby(laby,hero,end);
-	//printf("%d\n",rectest(1,6,1));
 	//while(hero[0]==end[0] && hero[1]==end[1]){}
+	
+	printf("%d iterations\n",dijkstra(laby, mem, hero, end, 0, 0, 1));
 	return 0;
 }
 
@@ -71,20 +82,33 @@ void printLaby(int laby[labySize][labySize], int hero[2], int end[2]){
 	printf("-x\n\n");
 }
 
-int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], char vector, int iteration){ //incomplet
+int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level){ //incomplet, n'a pas la liste chainée. Mais fonctionne, mais pas le bon résultat
 	//condition d'arret, sortie trouver
-	if(depart[0]==end[0] && depart[1]==end[1]){ return 6*level; };
+	if(depart[0]==end[0] && depart[1]==end[1]){ return 6*level; }
 	
+	//progression, relancement
+	else if(mem[depart[0]-1][depart[1]]==0 && vector!=3){//u 1
+		depart[0]--;
+		return 1*level+dijkstra(laby, mem, depart, end, 3, iteration++, level++);
+	}
 	
+	else if(mem[depart[0]][depart[1]+1]==0 && vector!=4){//r 2
+		depart[1]++;
+		return 2*level+dijkstra(laby, mem, depart, end, 4, iteration++, level++);
+	}
+	
+	else if(mem[depart[0]+1][depart[1]]==0 && vector!=1){//d 3
+		depart[0]++;
+		return 3*level+dijkstra(laby, mem, depart, end, 1, iteration++, level++);
+	}
+	
+	else if(mem[depart[0]][depart[1]-1]==0 && vector!=2){//l 4
+		depart[1]--;
+		return 4*level+dijkstra(laby, mem, depart, end, 2, iteration++, level++);
+	}
 	
 	//condition d'arret, mur
-	else /*(laby[depart[0]][depart[1]])*/{ return 5*level; };
-}
-
-int rectest(int i, int lim, int level){ //juste test de fonction recursive
-	if(i<lim){
-		return 1*level + rectest(i+1, lim, level*10); //pour int
-	} else {
-		return 6*level;
-	}
+	
+	/*(laby[depart[0]][depart[1]])*/
+	else { return 5*level; }
 }
