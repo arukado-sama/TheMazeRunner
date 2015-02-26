@@ -76,6 +76,11 @@ public:
     /*! Sprites des murs du labyrinthe */
         Sprite *walls;
 
+    /*! Le joueur a la clé */
+        bool playerHasKey;
+
+    /*! Le joueur a trouvé la porte */
+        bool playerHasDoor;
 
 
     /*! Contrôle du clavier */

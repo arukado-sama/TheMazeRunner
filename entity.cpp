@@ -5,6 +5,7 @@ Entity::Entity(int x0, int y0, int type0)
     x = x0;
     y = y0;
     type = type0;
+    index = 0;
 
     path = QCoreApplication::applicationDirPath ()+"/img";
 

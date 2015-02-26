@@ -4,6 +4,12 @@
 #include <QApplication>
 #include "defines.h"
 
+struct square
+{
+    int x;
+    int y;
+};
+
 class Entity
 {
 public:
@@ -28,6 +34,12 @@ public:
 
     /*! Matrice des cases visitées */
     int **visited;
+
+    /*! Tableau des cases parcourues */
+    square route[9999];
+
+    /*! Indice du tableau des cases parcourues */
+    int index;
 
     /*! Chemin des sprites */
     QString path;

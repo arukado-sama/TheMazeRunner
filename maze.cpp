@@ -67,6 +67,10 @@ void Maze::initEntities()
     saveEntities();
 
     initMemEntities();
+
+    //le joueur n'a pas encore trouvé les objectifs
+    playerHasKey = false;
+    playerHasDoor = false;
 }
 
 
@@ -179,7 +183,8 @@ void Maze::drawWalls()
 
             walls[k].setPosition(j*40+20, i*40+20);
 
-            App->draw((Sprite)walls[k]);
+            if(playerHasKey && (squares[i][j] == KEY));
+            else App->draw((Sprite)walls[k]);
 
             k++;
         }
@@ -508,13 +513,22 @@ void Maze::printMemPlayer()
 
 bool Maze::search(int X, int Y)
 {
-    // (canMove) Implémenter cul-de-sac avec la vision à 2 cases et faire fonction  (renvoie true)
-    // (search) rajouter aléatoire en appelant la fonction sur les 4 directions et en sélectionnant aléatoirement une des vraies
     // dijkstra(X, Y) renvoie le plus court chemin, tableau parcours qui contient des structures (int distance, int x-pred, int y-pred)
 
+    static bool go = true;
     int vector = -1;
     int i = -1;
     int vectors[4];
+
+    if(go)
+    {
+        entities[player]->route[entities[player]->index].x = entities[player]->x;
+        entities[player]->route[entities[player]->index].y = entities[player]->y;
+
+        entities[player]->index++;
+    }
+
+    go = true;
 
     entities[player]->x = X;
     entities[player]->y = Y;
@@ -530,9 +544,12 @@ bool Maze::search(int X, int Y)
 
     if(!opened()) return false;
 
-    if(squares[Y][X] == DOOR)
+    if(squares[Y][X] == DOOR) playerHasDoor = true;
+    if(squares[Y][X] == KEY) playerHasKey = true;
+
+    if(playerHasDoor && playerHasKey)
     {
-        return true;
+        //dijkstra
     }
 
     if(canMove(X, Y, UP)){ i++; vectors[i] = UP; }
@@ -544,46 +561,16 @@ bool Maze::search(int X, int Y)
 
     if(i!=-1) vector = vectors[rand()%(i+1)];
 
+    qDebug("vector = %d", vector);
+
     switch(vector)
     {
         case UP: if(search(X, Y - 1)) return true; break;
         case DOWN: if(search(X, Y + 1)) return true; break;
         case LEFT: if(search(X - 1, Y)) return true; break;
         case RIGHT: if(search(X + 1, Y)) return true; break;
-        case -1: return false; break;
+        case -1: entities[player]->index--; go = false; if(search(entities[player]->route[entities[player]->index].x, entities[player]->route[entities[player]->index].y)) return true; break;
     }
-
-    /*
-    if (entities[player]->visited[Y][X - 1] == 0 && entities[player]->mem[Y][X - 1] == VOID && search(X - 1, Y))
-    {
-        return true;
-    }
-
-    if (entities[player]->visited[Y][X + 1] == 0 && entities[player]->mem[Y][X + 1] == VOID && search(X + 1, Y))
-    {
-        return true;
-    }
-
-    if (entities[player]->visited[Y - 1][X] == 0 && entities[player]->mem[Y - 1][X] == VOID && search(X, Y - 1))
-    {
-        return true;
-    }
-
-    if (entities[player]->visited[Y + 1][X] == 0 && entities[player]->mem[Y + 1][X] == VOID && search(X, Y + 1))
-    {
-        return true;
-    }
-    */
-
-    entities[player]->x = X;
-    entities[player]->y = Y;
-
-    //entities[player]->visited[Y][X] = 0; //pose probleme
-
-    playerVision();
-    keyboard();
-    animation();
-    sleep(0.5);
 
     return false;
 }
@@ -591,32 +578,77 @@ bool Maze::search(int X, int Y)
 
 bool Maze::canMove(int X, int Y, int vector)
 {
-    int visited, mem;
+    int visited, mem, mem2, mem3, mem4;
 
     switch(vector)
     {
         case UP:
+
             visited = entities[player]->visited[Y - 1][X];
             mem = entities[player]->mem[Y - 1][X];
-            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+
+            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            {
+                mem2 = entities[player]->mem[Y - 2][X];
+                mem3 = entities[player]->mem[Y - 1][X - 1];
+                mem4 = entities[player]->mem[Y - 1][X + 1];
+
+                if((mem2 == WALL)&&(mem3 == WALL)&&(mem4 == WALL)&&(squares[Y - 1][X]!=KEY)&&(squares[Y - 1][X]!=DOOR)) return false;
+
+                else return true;
+            }
+
             break;
 
         case DOWN:
             visited = entities[player]->visited[Y + 1][X];
             mem = entities[player]->mem[Y + 1][X];
-            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+
+            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            {
+                mem2 = entities[player]->mem[Y + 2][X];
+                mem3 = entities[player]->mem[Y + 1][X - 1];
+                mem4 = entities[player]->mem[Y + 1][X + 1];
+
+                if((mem2 == WALL)&&(mem3 == WALL)&&(mem4 == WALL)&&(squares[Y + 1][X]!=KEY)&&(squares[Y + 1][X]!=DOOR)) return false;
+
+                else return true;
+            }
+
             break;
 
         case LEFT:
             visited = entities[player]->visited[Y][X - 1];
             mem = entities[player]->mem[Y][X - 1];
-            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+
+            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            {
+                mem2 = entities[player]->mem[Y][X - 2];
+                mem3 = entities[player]->mem[Y - 1][X - 1];
+                mem4 = entities[player]->mem[Y + 1][X - 1];
+
+                if((mem2 == WALL)&&(mem3 == WALL)&&(mem4 == WALL)&&(squares[Y][X - 1]!=KEY)&&(squares[Y][X - 1]!=DOOR)) return false;
+
+                else return true;
+            }
+
             break;
 
         case RIGHT:
             visited = entities[player]->visited[Y][X + 1];
             mem = entities[player]->mem[Y][X + 1];
-            if(visited == 0 && ((mem == VOID)||(mem == UNKNOWN))) return true;
+
+            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            {
+                mem2 = entities[player]->mem[Y][X + 2];
+                mem3 = entities[player]->mem[Y - 1][X + 1];
+                mem4 = entities[player]->mem[Y + 1][X + 1];
+
+                if((mem2 == WALL)&&(mem3 == WALL)&&(mem4 == WALL)&&(squares[Y][X + 1]!=KEY)&&(squares[Y][X + 1]!=DOOR)) return false;
+
+                else return true;
+            }
+
             break;
     }
 
