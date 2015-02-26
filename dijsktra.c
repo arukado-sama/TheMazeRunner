@@ -23,6 +23,17 @@ comme dans le knapsack
 
 #define labySize 5 //que des matrices carrees, a manipuler avec precautions
 
+struct CaseSuivante { //peut être plus de variable que nécéssaires
+    int distance;
+    char direction; //direction d'origine
+    int Case[2];
+    struct CaseSuivante * Us; //suivant haut
+    struct CaseSuivante * Rs; //suivant droit
+    struct CaseSuivante * Ds; //suivant bas
+    struct CaseSuivante * Ls; //suivant gauche
+};
+typedef struct CaseSuivante * Chemin;
+
 void printLaby(int laby[labySize][labySize], int hero[2], int end[2]);
 int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level);
 //depart est a l'origine la position du hero, change a chaque appel.
@@ -34,16 +45,16 @@ int main(){
 	int laby[labySize][labySize]={{1,1,1,1,1},
 								{1,0,0,0,1},
 								{1,0,0,0,1},
-								{1,0,0,0,1},
+								{1,0,1,0,1},
 								{1,1,1,1,1}};
 	int mem[labySize][labySize]={{1,1,1,1,1},
 								{1,0,0,0,1},
 								{1,0,0,0,1},
-								{1,0,0,0,1},
+								{1,0,1,0,1},
 								{1,1,1,1,1}};
 	int hero[2]={1,1};
 	int end[2]={2,3};
-	puts("Test algo Dijkstra");
+	puts("\nTest algo Dijkstra");
 	printLaby(laby,hero,end);
 	//while(hero[0]==end[0] && hero[1]==end[1]){}
 	
@@ -82,7 +93,7 @@ void printLaby(int laby[labySize][labySize], int hero[2], int end[2]){
 	printf("-x\n\n");
 }
 
-int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level){ //incomplet, n'a pas la liste chainée. Mais fonctionne, mais pas le bon résultat
+int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level){ //incomplet, n'a pas la liste chainée. Mais fonctionne, mais pas le bon résultat, plante parfois
 	//condition d'arret, sortie trouver
 	if(depart[0]==end[0] && depart[1]==end[1]){ return 6*level; }
 	
