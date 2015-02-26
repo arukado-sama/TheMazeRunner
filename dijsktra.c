@@ -24,21 +24,25 @@ comme dans le knapsack
 #define labySize 5 //que des matrices carrees, a manipuler avec precautions
 
 struct CaseSuivante { //peut être plus de variable que nécéssaires
-    int distance;
+    int distance; //distance par rapport au point de départ
     char direction; //direction d'origine
-    int Case[2];
+    int X;
+    int Y; //case où sont rendu l'algorithme
     struct CaseSuivante * Us; //suivant haut
     struct CaseSuivante * Rs; //suivant droit
     struct CaseSuivante * Ds; //suivant bas
     struct CaseSuivante * Ls; //suivant gauche
 };
-typedef struct CaseSuivante * Chemin;
+typedef struct CaseSuivante * Arbre; //arbre des chemins
 
 void printLaby(int laby[labySize][labySize], int hero[2], int end[2]);
 int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level);
 //depart est a l'origine la position du hero, change a chaque appel.
 //vector est la direction d'ou venait la case depart, donc faire un contraire pour ne pas revenir en arriere, non-initialisé au départ
 //algorithme recursif a quatre dimension ? complication pour récupérer la réponse ?
+
+void ajoutAArbre(Arbre * a, int distance, char direction, int Case[2]);
+//rajoute un noeud dans l'arbre des solutions
 
 int main(){
 	char path[9]=""; //chemin
@@ -59,6 +63,9 @@ int main(){
 	//while(hero[0]==end[0] && hero[1]==end[1]){}
 	
 	printf("%d iterations\n",dijkstra(laby, mem, hero, end, 0, 0, 1));
+	
+	
+	
 	return 0;
 }
 
@@ -93,7 +100,9 @@ void printLaby(int laby[labySize][labySize], int hero[2], int end[2]){
 	printf("-x\n\n");
 }
 
-int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level){ //incomplet, n'a pas la liste chainée. Mais fonctionne, mais pas le bon résultat, plante parfois
+int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depart[2], int end[2], int vector, int iteration, int level){ //incomplet, n'a pas la liste chainée.
+//Mais fonctionne, mais pas le bon résultat, plante parfois
+
 	//condition d'arret, sortie trouver
 	if(depart[0]==end[0] && depart[1]==end[1]){ return 6*level; }
 	
@@ -119,7 +128,20 @@ int dijkstra(int laby[labySize][labySize], int mem[labySize][labySize], int depa
 	}
 	
 	//condition d'arret, mur
-	
-	/*(laby[depart[0]][depart[1]])*/
 	else { return 5*level; }
+}
+
+void ajoutAArbre(Arbre * a, int distance, char direction, int Case[2]){
+	Arbre o, tmp=*a;
+	o=malloc(sizeof(Arbre));
+	o->distance=distance;
+	o->direction=direction;
+	o->X=Case[0];
+	o->Y=Case[1];
+	
+	//tous les noeud suivant sont null par défaut
+	o->Rs=NULL;
+	o->Ds=NULL;
+	o->Ls=NULL;
+	o->Us=NULL;
 }
