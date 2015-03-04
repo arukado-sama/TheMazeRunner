@@ -375,36 +375,6 @@ void Maze::printMaze()
 }
 
 
-int Maze::pathFinding(Entity *e, int xe, int ye, int goal)
-{
-    int x=0, y=0;
-
-    for(int i=0;i<size1;i++)
-    {
-        for(int j=0;j<size2;j++)
-        {
-            if(squares[i][j]==goal)
-            {
-                x = i;
-                y = j;
-            }
-        }
-    }
-
-    //hors labyrinthe
-    if((xe < 0) || (xe >= size1) || (ye < 0) || (ye >= size2)) return 0;
-
-    //mémoire entité
-    if(e->mem[xe][ye] == 1) return 0;
-
-    if((xe == x) && (ye == y)) return 1;
-
-    e->mem[xe][ye] = 1;
-
-    return (pathFinding(e, xe+1, ye, goal) || pathFinding(e, xe-1, ye, goal) || pathFinding(e, xe, ye+1, goal) || pathFinding(e, xe, ye-1, goal));
-}
-
-
 void Maze::playerVision()
 {
     int y=entities[player]->x;
@@ -511,6 +481,24 @@ void Maze::printMemPlayer()
 }
 
 
+node Maze::dijkstra(int X, int Y)
+{
+    int i = 0, dist = 0;
+    node route[size1*size2];
+
+    route[i].xpred = X;
+    route[i].ypred = Y;
+    route[i].distance = dist;
+
+    while(squares[Y][X] != DOOR)
+    {
+
+    }
+
+    return *route;
+}
+
+
 bool Maze::search(int X, int Y)
 {
     // dijkstra(X, Y) renvoie le plus court chemin, tableau parcours qui contient des structures (int distance, int x-pred, int y-pred)
@@ -544,8 +532,16 @@ bool Maze::search(int X, int Y)
 
     if(!opened()) return false;
 
-    if(squares[Y][X] == DOOR) playerHasDoor = true;
     if(squares[Y][X] == KEY) playerHasKey = true;
+    if(squares[Y][X] == DOOR)
+    {
+        playerHasDoor = true;
+
+        if(playerHasKey)
+        {
+            return false;
+        }
+    }
 
     if(playerHasDoor && playerHasKey)
     {
@@ -569,7 +565,14 @@ bool Maze::search(int X, int Y)
         case DOWN: if(search(X, Y + 1)) return true; break;
         case LEFT: if(search(X - 1, Y)) return true; break;
         case RIGHT: if(search(X + 1, Y)) return true; break;
-        case -1: entities[player]->index--; go = false; if(search(entities[player]->route[entities[player]->index].x, entities[player]->route[entities[player]->index].y)) return true; break;
+        case -1: entities[player]->index--;
+
+        if(entities[player]->index < 0)
+        {
+            App->close(); break;
+        }
+
+        go = false; if(search(entities[player]->route[entities[player]->index].x, entities[player]->route[entities[player]->index].y)) return true; break;
     }
 
     return false;
@@ -589,7 +592,10 @@ bool Maze::canMove(int X, int Y, int vector)
 
             if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
             {
-                mem2 = entities[player]->mem[Y - 2][X];
+                if(Y - 2 >= 0)
+                    mem2 = entities[player]->mem[Y - 2][X];
+                else mem2 = WALL;
+
                 mem3 = entities[player]->mem[Y - 1][X - 1];
                 mem4 = entities[player]->mem[Y - 1][X + 1];
 
@@ -606,7 +612,10 @@ bool Maze::canMove(int X, int Y, int vector)
 
             if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
             {
-                mem2 = entities[player]->mem[Y + 2][X];
+                if(Y + 2 < size1)
+                    mem2 = entities[player]->mem[Y + 2][X];
+                else mem2 = WALL;
+
                 mem3 = entities[player]->mem[Y + 1][X - 1];
                 mem4 = entities[player]->mem[Y + 1][X + 1];
 
@@ -623,7 +632,10 @@ bool Maze::canMove(int X, int Y, int vector)
 
             if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
             {
-                mem2 = entities[player]->mem[Y][X - 2];
+                if(X - 2 >= 0)
+                    mem2 = entities[player]->mem[Y][X - 2];
+                else mem2 = WALL;
+
                 mem3 = entities[player]->mem[Y - 1][X - 1];
                 mem4 = entities[player]->mem[Y + 1][X - 1];
 
@@ -640,7 +652,10 @@ bool Maze::canMove(int X, int Y, int vector)
 
             if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
             {
-                mem2 = entities[player]->mem[Y][X + 2];
+                if(X + 2 < size2)
+                    mem2 = entities[player]->mem[Y][X + 2];
+                else mem2 = WALL;
+
                 mem3 = entities[player]->mem[Y - 1][X + 1];
                 mem4 = entities[player]->mem[Y + 1][X + 1];
 

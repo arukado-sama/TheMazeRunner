@@ -128,9 +128,6 @@ public:
     /*! Dessine les murs, la clé et la porte */
         void drawWalls();
 
-    /*! Algorithme de Dijkstra */
-        int pathFinding(Entity *e, int xe, int ye, int wall);
-
     /*! Vision du joueur */
         void playerVision();
 
@@ -142,6 +139,9 @@ public:
 
     /*! Le joueur peut bouger dans la direction */
         bool canMove(int X, int Y, int vector);
+
+    /*! Le joueur a la clé et sait où est la porte */
+        node dijkstra(int X, int Y);
 };
 
 #endif // MAZE_H

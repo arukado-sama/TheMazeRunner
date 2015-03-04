@@ -10,6 +10,13 @@ struct square
     int y;
 };
 
+struct node
+{
+    int distance;
+    int xpred;
+    int ypred;
+};
+
 class Entity
 {
 public:
