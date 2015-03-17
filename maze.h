@@ -141,7 +141,7 @@ public:
         bool canMove(int X, int Y, int vector);
 
     /*! Le joueur a la clé et sait où est la porte */
-        node dijkstra(int X, int Y);
+        void dijkstra();
 };
 
 #endif // MAZE_H

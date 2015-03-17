@@ -481,21 +481,136 @@ void Maze::printMemPlayer()
 }
 
 
-node Maze::dijkstra(int X, int Y)
+void Maze::dijkstra()
 {
-    int i = 0, dist = 0;
-    node route[size1*size2];
+    int xmin, ymin, distmin;
+    node **route;
 
-    route[i].xpred = X;
-    route[i].ypred = Y;
-    route[i].distance = dist;
+    //allocations des cases
+    route = (node**)malloc(size1*sizeof(*route));
+    for(int i=0 ; i<size1; i++) route[i] = (node*)malloc(size2*sizeof(**route));
 
-    while(squares[Y][X] != DOOR)
+    //initialisation des cases
+    for(int i=0; i<size1; i++)
+        for(int j=0; j<size2; j++)
+        {
+            route[i][j].dist = size1*size2;
+            route[i][j].xpred = -1;
+            route[i][j].ypred = -1;
+
+            if(squares[i][j]!=WALL) route[i][j].todo = true;
+            else route[i][j].todo = false;
+        }
+
+    route[entities[player]->y][entities[player]->x].dist = 0;
+    route[entities[player]->y][entities[player]->x].xpred = entities[player]->y;
+    route[entities[player]->y][entities[player]->x].ypred = entities[player]->x;
+
+    xmin = entities[player]->y;
+    ymin = entities[player]->x;
+    distmin = size1*size2+1;
+
+    while(entities[player]->mem[xmin][ymin]!=DOOR)
     {
+        for(int i=0; i<size1; i++)
+            for(int j=0; j<size2; j++)
+            {
+                if((route[i][j].todo == true)&&(route[i][j].dist <= distmin))
+                {
+                    xmin = i;
+                    ymin = j;
+                    distmin = route[i][j].dist;
+                }
+            }
 
+        route[xmin][ymin].todo = false;
+
+        if((squares[xmin][ymin+1]!=WALL)&&(route[xmin][ymin+1].dist > distmin+1))
+        {
+            route[xmin][ymin+1].dist = distmin+1;
+            route[xmin][ymin+1].xpred = xmin;
+            route[xmin][ymin+1].ypred = ymin;
+        }
+
+        else
+
+            if((squares[xmin+1][ymin]!=WALL)&&(route[xmin+1][ymin].dist > distmin+1))
+            {
+                route[xmin+1][ymin].dist = distmin+1;
+                route[xmin+1][ymin].xpred = xmin;
+                route[xmin+1][ymin].ypred = ymin;
+            }
+
+            else
+
+                if((squares[xmin][ymin-1]!=WALL)&&(route[xmin][ymin-1].dist > distmin+1))
+                {
+                    route[xmin][ymin-1].dist = distmin+1;
+                    route[xmin][ymin-1].xpred = xmin;
+                    route[xmin][ymin-1].ypred = ymin;
+                }
+
+                else
+
+                    if((squares[xmin-1][ymin]!=WALL)&&(route[xmin-1][ymin].dist > distmin+1))
+                    {
+                        route[xmin-1][ymin].dist = distmin+1;
+                        route[xmin-1][ymin].xpred = xmin;
+                        route[xmin-1][ymin].ypred = ymin;
+                    }
     }
 
-    return *route;
+
+    int solution[size1*size2];
+    int sol = 0;
+    int xsol = xmin, ysol = ymin;
+
+    while((xsol!=entities[player]->y)&&(ysol!=entities[player]->x))
+    {
+        if(route[xsol][ysol+1].dist == distmin-sol)
+        {
+            xsol = xsol;
+            ysol = ysol+1;
+            solution[sol] = RIGHT;
+            sol++;
+        }
+
+        else
+
+            if(route[xsol+1][ysol].dist == distmin-sol)
+            {
+                xsol = xsol+1;
+                ysol = ysol;
+                solution[sol] = DOWN;
+                sol++;
+            }
+
+            else
+
+                if(route[xsol][ysol-1].dist == distmin-sol)
+                {
+                    xsol = xsol;
+                    ysol = ysol-1;
+                    solution[sol] = LEFT;
+                    sol++;
+                }
+
+                else
+
+                    if(route[xsol-1][ysol].dist == distmin-sol)
+                    {
+                        xsol = xsol-1;
+                        ysol = ysol;
+                        solution[sol] = UP;
+                        sol++;
+                    }
+    }
+
+    for(int i=sol; i>=0; i--)
+    {
+        entities[player]->move(solution[sol]);
+        sleep(0.5);
+    }
 }
 
 
@@ -545,7 +660,7 @@ bool Maze::search(int X, int Y)
 
     if(playerHasDoor && playerHasKey)
     {
-        //dijkstra
+        dijkstra();
     }
 
     if(canMove(X, Y, UP)){ i++; vectors[i] = UP; }

@@ -12,9 +12,10 @@ struct square
 
 struct node
 {
-    int distance;
+    int dist;
     int xpred;
     int ypred;
+    bool todo;
 };
 
 class Entity
