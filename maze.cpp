@@ -532,32 +532,26 @@ void Maze::dijkstra()
             route[xmin][ymin+1].ypred = ymin;
         }
 
-        else
+        if((squares[xmin+1][ymin]!=WALL)&&(route[xmin+1][ymin].dist > distmin+1))
+        {
+            route[xmin+1][ymin].dist = distmin+1;
+            route[xmin+1][ymin].xpred = xmin;
+            route[xmin+1][ymin].ypred = ymin;
+        }
 
-            if((squares[xmin+1][ymin]!=WALL)&&(route[xmin+1][ymin].dist > distmin+1))
-            {
-                route[xmin+1][ymin].dist = distmin+1;
-                route[xmin+1][ymin].xpred = xmin;
-                route[xmin+1][ymin].ypred = ymin;
-            }
+        if((squares[xmin][ymin-1]!=WALL)&&(route[xmin][ymin-1].dist > distmin+1))
+        {
+            route[xmin][ymin-1].dist = distmin+1;
+            route[xmin][ymin-1].xpred = xmin;
+            route[xmin][ymin-1].ypred = ymin;
+        }
 
-            else
-
-                if((squares[xmin][ymin-1]!=WALL)&&(route[xmin][ymin-1].dist > distmin+1))
-                {
-                    route[xmin][ymin-1].dist = distmin+1;
-                    route[xmin][ymin-1].xpred = xmin;
-                    route[xmin][ymin-1].ypred = ymin;
-                }
-
-                else
-
-                    if((squares[xmin-1][ymin]!=WALL)&&(route[xmin-1][ymin].dist > distmin+1))
-                    {
-                        route[xmin-1][ymin].dist = distmin+1;
-                        route[xmin-1][ymin].xpred = xmin;
-                        route[xmin-1][ymin].ypred = ymin;
-                    }
+        if((squares[xmin-1][ymin]!=WALL)&&(route[xmin-1][ymin].dist > distmin+1))
+        {
+            route[xmin-1][ymin].dist = distmin+1;
+            route[xmin-1][ymin].xpred = xmin;
+            route[xmin-1][ymin].ypred = ymin;
+        }
     }
 
 
@@ -565,46 +559,42 @@ void Maze::dijkstra()
     int sol = 0;
     int xsol = xmin, ysol = ymin;
 
-    while((xsol!=entities[player]->y)&&(ysol!=entities[player]->x))
+
+    while((xsol!=entities[player]->y)&&(ysol!=entities[player]->y))
     {
-        if(route[xsol][ysol+1].dist == distmin-sol)
+        if((route[xsol][ysol].xpred + 1 == xsol)&&(route[xsol][ysol].ypred = ysol))
         {
-            xsol = xsol;
-            ysol = ysol+1;
-            solution[sol] = RIGHT;
+            solution[sol] = DOWN;
             sol++;
+            xsol = route[xsol][ysol].xpred;
+            ysol = route[xsol][ysol].ypred;
         }
 
-        else
+        if((route[xsol][ysol].xpred - 1 == xsol)&&(route[xsol][ysol].ypred = ysol))
+        {
+            solution[sol] = UP;
+            sol++;
+            xsol = route[xsol][ysol].xpred;
+            ysol = route[xsol][ysol].ypred;
+        }
 
-            if(route[xsol+1][ysol].dist == distmin-sol)
-            {
-                xsol = xsol+1;
-                ysol = ysol;
-                solution[sol] = DOWN;
-                sol++;
-            }
+        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred + 1 == ysol))
+        {
+            solution[sol] = RIGHT;
+            sol++;
+            xsol = route[xsol][ysol].xpred;
+            ysol = route[xsol][ysol].ypred;
+        }
 
-            else
-
-                if(route[xsol][ysol-1].dist == distmin-sol)
-                {
-                    xsol = xsol;
-                    ysol = ysol-1;
-                    solution[sol] = LEFT;
-                    sol++;
-                }
-
-                else
-
-                    if(route[xsol-1][ysol].dist == distmin-sol)
-                    {
-                        xsol = xsol-1;
-                        ysol = ysol;
-                        solution[sol] = UP;
-                        sol++;
-                    }
+        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred - 1 == ysol))
+        {
+            solution[sol] = LEFT;
+            sol++;
+            xsol = route[xsol][ysol].xpred;
+            ysol = route[xsol][ysol].ypred;
+        }
     }
+
 
     for(int i=sol; i>=0; i--)
     {
@@ -616,8 +606,6 @@ void Maze::dijkstra()
 
 bool Maze::search(int X, int Y)
 {
-    // dijkstra(X, Y) renvoie le plus court chemin, tableau parcours qui contient des structures (int distance, int x-pred, int y-pred)
-
     static bool go = true;
     int vector = -1;
     int i = -1;
