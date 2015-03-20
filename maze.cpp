@@ -390,12 +390,12 @@ void Maze::playerVision()
         entities[player]->mem[x+1][y]=WALL;
     else
     {
-        entities[player]->mem[x+1][y]=VOID;
+        entities[player]->mem[x+1][y]=squares[x+1][y];
 
         if(squares[x+2][y]==WALL)
             entities[player]->mem[x+2][y]=WALL;
 
-        else entities[player]->mem[x+2][y]=VOID;
+        else entities[player]->mem[x+2][y]=squares[x+2][y];
     }
 
     //vision en haut
@@ -403,12 +403,12 @@ void Maze::playerVision()
         entities[player]->mem[x-1][y]=WALL;
     else
     {
-        entities[player]->mem[x-1][y]=VOID;
+        entities[player]->mem[x-1][y]=squares[x-1][y];
 
         if(squares[x-2][y]==WALL)
             entities[player]->mem[x-2][y]=WALL;
 
-        else entities[player]->mem[x-2][y]=VOID;
+        else entities[player]->mem[x-2][y]=squares[x-2][y];
     }
 
     //vision à gauche
@@ -416,12 +416,12 @@ void Maze::playerVision()
         entities[player]->mem[x][y-1]=WALL;
     else
     {
-        entities[player]->mem[x][y-1]=VOID;
+        entities[player]->mem[x][y-1]=squares[x][y-1];
 
         if(squares[x][y-2]==WALL)
             entities[player]->mem[x][y-2]=WALL;
 
-        else entities[player]->mem[x][y-2]=VOID;
+        else entities[player]->mem[x][y-2]=squares[x][y-2];
     }
 
     //vision à droite
@@ -429,37 +429,37 @@ void Maze::playerVision()
         entities[player]->mem[x][y+1]=WALL;
     else
     {
-        entities[player]->mem[x][y+1]=VOID;
+        entities[player]->mem[x][y+1]=squares[x][y+1];
 
         if(squares[x][y+2]==WALL)
             entities[player]->mem[x][y+2]=WALL;
 
-        else entities[player]->mem[x][y+2]=VOID;
+        else entities[player]->mem[x][y+2]=squares[x][y+2];
     }
 
     //vision en haut à droite
     if(squares[x-1][y+1]==WALL)
         entities[player]->mem[x-1][y+1]=WALL;
     else
-        entities[player]->mem[x-1][y+1]=VOID;
+        entities[player]->mem[x-1][y+1]=squares[x-1][y+1];
 
     //vision en haut à gauche
     if(squares[x-1][y-1]==WALL)
         entities[player]->mem[x-1][y-1]=WALL;
     else
-        entities[player]->mem[x-1][y-1]=VOID;
+        entities[player]->mem[x-1][y-1]=squares[x-1][y-1];
 
     //vision en bas à droite
     if(squares[x+1][y+1]==WALL)
         entities[player]->mem[x+1][y+1]=WALL;
     else
-        entities[player]->mem[x+1][y+1]=VOID;
+        entities[player]->mem[x+1][y+1]=squares[x+1][y+1];
 
     //vision en bas à gauche
     if(squares[x+1][y-1]==WALL)
         entities[player]->mem[x+1][y-1]=WALL;
     else
-        entities[player]->mem[x+1][y-1]=VOID;
+        entities[player]->mem[x+1][y-1]=squares[x+1][y-1];
 
     }
 }
@@ -508,10 +508,13 @@ void Maze::dijkstra()
 
     xmin = entities[player]->y;
     ymin = entities[player]->x;
-    distmin = size1*size2+1;
+
+    qDebug("avant boucle");
 
     while(entities[player]->mem[xmin][ymin]!=DOOR)
     {
+        distmin = size1*size2+1;
+
         for(int i=0; i<size1; i++)
             for(int j=0; j<size2; j++)
             {
@@ -525,33 +528,46 @@ void Maze::dijkstra()
 
         route[xmin][ymin].todo = false;
 
-        if((squares[xmin][ymin+1]!=WALL)&&(route[xmin][ymin+1].dist > distmin+1))
+        if((route[xmin][ymin+1].todo)&&(route[xmin][ymin+1].dist > distmin+1))
         {
             route[xmin][ymin+1].dist = distmin+1;
             route[xmin][ymin+1].xpred = xmin;
             route[xmin][ymin+1].ypred = ymin;
         }
 
-        if((squares[xmin+1][ymin]!=WALL)&&(route[xmin+1][ymin].dist > distmin+1))
+        if((route[xmin+1][ymin].todo)&&(route[xmin+1][ymin].dist > distmin+1))
         {
             route[xmin+1][ymin].dist = distmin+1;
             route[xmin+1][ymin].xpred = xmin;
             route[xmin+1][ymin].ypred = ymin;
         }
 
-        if((squares[xmin][ymin-1]!=WALL)&&(route[xmin][ymin-1].dist > distmin+1))
+        if((route[xmin][ymin-1].todo)&&(route[xmin][ymin-1].dist > distmin+1))
         {
             route[xmin][ymin-1].dist = distmin+1;
             route[xmin][ymin-1].xpred = xmin;
             route[xmin][ymin-1].ypred = ymin;
         }
 
-        if((squares[xmin-1][ymin]!=WALL)&&(route[xmin-1][ymin].dist > distmin+1))
+        if((route[xmin-1][ymin].todo)&&(route[xmin-1][ymin].dist > distmin+1))
         {
             route[xmin-1][ymin].dist = distmin+1;
             route[xmin-1][ymin].xpred = xmin;
             route[xmin-1][ymin].ypred = ymin;
         }
+    }
+
+    qDebug("après boucle");
+
+
+    for(int i=0; i<size1; i++)
+    {
+        for(int j=0; j<size2; j++)
+        {
+            std::cerr << route[i][j].dist << " ";
+        }
+
+        std::cerr << std::endl;
     }
 
 
@@ -560,9 +576,9 @@ void Maze::dijkstra()
     int xsol = xmin, ysol = ymin;
 
 
-    while((xsol!=entities[player]->y)&&(ysol!=entities[player]->y))
+    while((xsol!=entities[player]->y)&&(ysol!=entities[player]->x))
     {
-        if((route[xsol][ysol].xpred + 1 == xsol)&&(route[xsol][ysol].ypred = ysol))
+        if((route[xsol][ysol].xpred == xsol + 1)&&(route[xsol][ysol].ypred == ysol))
         {
             solution[sol] = DOWN;
             sol++;
@@ -570,7 +586,7 @@ void Maze::dijkstra()
             ysol = route[xsol][ysol].ypred;
         }
 
-        if((route[xsol][ysol].xpred - 1 == xsol)&&(route[xsol][ysol].ypred = ysol))
+        if((route[xsol][ysol].xpred == xsol - 1)&&(route[xsol][ysol].ypred == ysol))
         {
             solution[sol] = UP;
             sol++;
@@ -578,7 +594,7 @@ void Maze::dijkstra()
             ysol = route[xsol][ysol].ypred;
         }
 
-        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred + 1 == ysol))
+        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred == ysol + 1))
         {
             solution[sol] = RIGHT;
             sol++;
@@ -586,7 +602,7 @@ void Maze::dijkstra()
             ysol = route[xsol][ysol].ypred;
         }
 
-        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred - 1 == ysol))
+        if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred == ysol - 1))
         {
             solution[sol] = LEFT;
             sol++;
@@ -693,7 +709,7 @@ bool Maze::canMove(int X, int Y, int vector)
             visited = entities[player]->visited[Y - 1][X];
             mem = entities[player]->mem[Y - 1][X];
 
-            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            if((visited == 0) && (mem != WALL))
             {
                 if(Y - 2 >= 0)
                     mem2 = entities[player]->mem[Y - 2][X];
@@ -713,7 +729,7 @@ bool Maze::canMove(int X, int Y, int vector)
             visited = entities[player]->visited[Y + 1][X];
             mem = entities[player]->mem[Y + 1][X];
 
-            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            if((visited == 0) && (mem != WALL))
             {
                 if(Y + 2 < size1)
                     mem2 = entities[player]->mem[Y + 2][X];
@@ -733,7 +749,7 @@ bool Maze::canMove(int X, int Y, int vector)
             visited = entities[player]->visited[Y][X - 1];
             mem = entities[player]->mem[Y][X - 1];
 
-            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            if((visited == 0) && (mem != WALL))
             {
                 if(X - 2 >= 0)
                     mem2 = entities[player]->mem[Y][X - 2];
@@ -753,7 +769,7 @@ bool Maze::canMove(int X, int Y, int vector)
             visited = entities[player]->visited[Y][X + 1];
             mem = entities[player]->mem[Y][X + 1];
 
-            if((visited == 0) && ((mem == VOID)||(mem == UNKNOWN)))
+            if((visited == 0) && (mem != WALL))
             {
                 if(X + 2 < size2)
                     mem2 = entities[player]->mem[Y][X + 2];

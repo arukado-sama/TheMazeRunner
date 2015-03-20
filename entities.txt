@@ -1,1 +1,1 @@
-3 5 PLAYER
+7 5 PLAYER

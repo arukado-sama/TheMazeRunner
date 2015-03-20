@@ -30,3 +30,5 @@ HEADERS += \
     sprite.h \
     defines.h \
     entity.h
+
+QMAKE_CXXFLAGS += -Wall
