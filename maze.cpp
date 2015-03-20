@@ -14,6 +14,13 @@ Maze::~Maze()
 {
     for(int i=0; i<size2; i++) free(squares[i]);
     free(squares);
+
+    for(int j=0; j<nbEntities; j++)
+    {
+        for(int i=0; i<size2; i++) free(entities[j]->mem[i]);
+        free(entities[j]->mem);
+    }
+
     free(walls);
     free(entities);
 }
@@ -578,6 +585,7 @@ void Maze::dijkstra()
 
     while((xsol!=entities[player]->y)&&(ysol!=entities[player]->x))
     {
+
         if((route[xsol][ysol].xpred == xsol + 1)&&(route[xsol][ysol].ypred == ysol))
         {
             solution[sol] = DOWN;
@@ -617,6 +625,10 @@ void Maze::dijkstra()
         entities[player]->move(solution[sol]);
         sleep(0.5);
     }
+
+
+    //for(int i=0; i<size2; i++) free(route[i]); //fait planter
+    free(route);
 }
 
 
@@ -652,6 +664,7 @@ bool Maze::search(int X, int Y)
     if(!opened()) return false;
 
     if(squares[Y][X] == KEY) playerHasKey = true;
+
     if(squares[Y][X] == DOOR)
     {
         playerHasDoor = true;
@@ -665,6 +678,7 @@ bool Maze::search(int X, int Y)
     if(playerHasDoor && playerHasKey)
     {
         dijkstra();
+        return false;
     }
 
     if(canMove(X, Y, UP)){ i++; vectors[i] = UP; }
