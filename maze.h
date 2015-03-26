@@ -142,6 +142,12 @@ public:
 
     /*! Le joueur a la clé et sait où est la porte */
         void dijkstra();
+
+    /*! Victoire */
+        void win();
+
+    /*! Défaite */
+        void lose();
 };
 
 #endif // MAZE_H

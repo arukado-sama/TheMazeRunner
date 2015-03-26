@@ -242,8 +242,6 @@ void Maze::saveSizes()
 
     WINDOW_HEIGHT = (size1)*40;
     WINDOW_WIDTH = (size2)*40;
-
-    qDebug("%d %d", size1, size2);
 }
 
 
@@ -520,7 +518,6 @@ void Maze::dijkstra()
     xmin = entities[player]->y;
     ymin = entities[player]->x;
 
-    qDebug("avant boucle");
 
     while(entities[player]->mem[xmin][ymin]!=DOOR)
     {
@@ -539,11 +536,9 @@ void Maze::dijkstra()
 
         route[xmin][ymin].todo = false;
 
-        qDebug("xmin = %d, ymin = %d", xmin, ymin);
 
         if((route[xmin][ymin+1].dist > distmin+1))
         {
-            qDebug("x=%d, y=%d", xmin, ymin+1);
             route[xmin][ymin+1].dist = distmin+1;
             route[xmin][ymin+1].xpred = xmin;
             route[xmin][ymin+1].ypred = ymin;
@@ -551,7 +546,6 @@ void Maze::dijkstra()
 
         if((route[xmin+1][ymin].dist > distmin+1))
         {
-            qDebug("x=%d, y=%d", xmin+1, ymin);
             route[xmin+1][ymin].dist = distmin+1;
             route[xmin+1][ymin].xpred = xmin;
             route[xmin+1][ymin].ypred = ymin;
@@ -559,7 +553,6 @@ void Maze::dijkstra()
 
         if((route[xmin][ymin-1].dist > distmin+1))
         {
-            qDebug("x=%d, y=%d", xmin, ymin-1);
             route[xmin][ymin-1].dist = distmin+1;
             route[xmin][ymin-1].xpred = xmin;
             route[xmin][ymin-1].ypred = ymin;
@@ -567,26 +560,12 @@ void Maze::dijkstra()
 
         if((route[xmin-1][ymin].dist > distmin+1))
         {
-            qDebug("x=%d, y=%d", xmin-1, ymin);
             route[xmin-1][ymin].dist = distmin+1;
             route[xmin-1][ymin].xpred = xmin;
             route[xmin-1][ymin].ypred = ymin;
         }
     }
 
-    qDebug("après boucle");
-
-//*
-    for(int i=0; i<10; i++)
-    {
-        for(int j=0; j<8; j++)
-        {
-            printf("(%2d,%2d) ", route[i][j].xpred, route[i][j].ypred);
-        }
-
-        printf("\n");
-    }
-//*/
 
     int solution[size1*size2];
     int sol = 0;
@@ -596,8 +575,6 @@ void Maze::dijkstra()
     {
         int xtemps=xsol, ytemps=ysol;
 
-        qDebug("xol=%d, ysol=%d ; xpred = %d, ypred = %d", xsol, ysol, route[xsol][ysol].xpred, route[xsol][ysol].ypred);
-
         if((route[xsol][ysol].xpred == xsol + 1)&&(route[xsol][ysol].ypred == ysol))
         {
             solution[sol] = UP;
@@ -605,6 +582,8 @@ void Maze::dijkstra()
             xsol = route[xtemps][ytemps].xpred;
             ysol = route[xtemps][ytemps].ypred;
         }
+
+        else
 
         if((route[xsol][ysol].xpred == xsol - 1)&&(route[xsol][ysol].ypred == ysol))
         {
@@ -614,6 +593,8 @@ void Maze::dijkstra()
             ysol = route[xtemps][ytemps].ypred;
         }
 
+        else
+
         if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred == ysol + 1))
         {
             solution[sol] = LEFT;
@@ -621,6 +602,8 @@ void Maze::dijkstra()
             xsol = route[xtemps][ytemps].xpred;
             ysol = route[xtemps][ytemps].ypred;
         }
+
+        else
 
         if((route[xsol][ysol].xpred == xsol)&&(route[xsol][ysol].ypred == ysol - 1))
         {
@@ -631,19 +614,17 @@ void Maze::dijkstra()
         }
     }
 
-    qDebug("sol = %d",sol);
 
     for(int i=sol-1; i>=0; i--)
     {
         entities[player]->move(solution[i]);
-        qDebug("%d", solution[i]);
         keyboard();
         animation();
         usleep(100000);
     }
 
 
-    for(int i=0; i<size1; i++) free(route[i]); //fait planter
+    for(int i=0; i<size1; i++) free(route[i]);
     free(route);
 }
 
@@ -670,8 +651,6 @@ bool Maze::search(int X, int Y)
 
     entities[player]->visited[Y][X] = 1;
 
-    qDebug("x= %d  y= %d\n", entities[player]->x, entities[player]->y);
-
     playerVision();
     keyboard();
     animation();
@@ -687,6 +666,7 @@ bool Maze::search(int X, int Y)
 
         if(playerHasKey)
         {
+            win();
             return false;
         }
     }
@@ -702,11 +682,7 @@ bool Maze::search(int X, int Y)
     if(canMove(X, Y, LEFT)){ i++; vectors[i] = LEFT; }
     if(canMove(X, Y, RIGHT)){ i++; vectors[i] = RIGHT; }
 
-    for(int j=0; j<=i; j++) qDebug("%d", vectors[j]); //le qDebug est sur j
-
     if(i!=-1) vector = vectors[rand()%(i+1)];
-
-    qDebug("vector = %d", vector);
 
     switch(vector)
     {
@@ -817,4 +793,48 @@ bool Maze::canMove(int X, int Y, int vector)
     }
 
     return false;
+}
+
+
+
+void Maze::win()
+{
+    //initialiser le message de victoire
+    Sprite *win = new Sprite((path+"/win.png").toStdString().c_str());
+
+    //initialiser la position du message
+    win->setPosition(WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+
+    //dessiner le message
+    App->draw(*win);
+
+    //afficher le message
+    App->display();
+
+    //attendre 3 secondes
+    usleep(3000000);
+
+    //fermer le jeu
+    App->close();
+}
+
+void Maze::lose()
+{
+    //initialiser le message de victoire
+    Sprite *lose = new Sprite((path+"/lose.png").toStdString().c_str());
+
+    //initialiser la position du message
+    lose->setPosition(WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+
+    //dessiner le message
+    App->draw(*lose);
+
+    //afficher le message
+    App->display();
+
+    //attendre 3 secondes
+    usleep(3000000);
+
+    //fermer le jeu
+    App->close();
 }
